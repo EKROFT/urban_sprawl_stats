@@ -12,9 +12,24 @@ NO2.model<-lm(data$NO2_mean~data$Road.+data$Income+data$petrochem_distance+data$
 summary(NO2.model)
 plot(NO2.model)
 ##diagnostics don't look so great
+##log transform didn't help, neither did sqrt
+
+NO2.ranked<-rank(data$NO2_mean)
+ranked.data<-data.frame(NO2_mean=data$NO2_mean, NO2_ranked=NO2.ranked, income=data$Income,
+                        BD=data$BD, petrochem=data$petrochem_distance, road=data$Road.)
+View(ranked.data)
+
+lm.no2.ranked<-lm(NO2_ranked~BD+petrochem+road+income, data=ranked.data)
+summary(lm.no2.ranked)
+plot(lm.no2.ranked)
+
+##rank transform helped but still not perfect
 
 ##########################GS#######################
-GS.model<-lm(data$nearest_M~data$BD+data$Income)
+GS.model<-lm(sqrt(data$nearest_M)~data$BD+data$Income)
 summary(GS.model)
 plot(GS.model)
 ##diagnostic plots iffy
+##sqrt transform seems to help
+##log transform did not help
+##rank transform did not help
