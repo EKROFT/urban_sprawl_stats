@@ -1,4 +1,4 @@
-data<-read.csv("compiled_data_0710.csv")
+data<-read.csv("shortlist_data_0715.csv")
 View(data)
 
 ###################LST#######################
