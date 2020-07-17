@@ -49,7 +49,7 @@ GS.model<-lm(sqrt(data$nearest_M)~data$BD+data$Income)
 summary(GS.model)
 plot(GS.model)
 ##diagnostic plots iffy
-##sqrt transform seems to help
+##sqrt transform seems to help 
 ##log transform did not help
 ##rank transform did not help
 
