@@ -23,16 +23,18 @@ View(ranked.data)
 lm.no2.ranked<-lm(NO2_ranked~BD+petrochem+road+income, data=ranked.data)
 summary(lm.no2.ranked)
 plot(lm.no2.ranked)
+##rank transform helped but still not perfect
 
-NO2.gam<-gam(data$NO2_mean~s(data$BD)+s(data$petrochem_distance)+
+NO2.gam<-gam(data$NO2_mean~data$BD+s(data$petrochem_distance)+
                s(data$Income), method="REML")
 summary(NO2.gam)
 coef(NO2.gam)
 plot(NO2.gam)
 
-plot(NO2.gam, residuals=TRUE, pch=1)
+plot(NO2.gam, residuals=TRUE, pch=1, seWithMean = TRUE)
 
-##rank transform helped but still not perfect
+gam.check(NO2.gam)
+##not sure about some of these diagnostic plots
 
 ##########################GS#######################
 GS.model<-lm(sqrt(data$nearest_M)~data$BD+data$Income)
@@ -46,7 +48,9 @@ plot(GS.model)
 GS.gam<-gam(data$nearest_M~s(data$BD)+s(data$Income))
 summary(GS.gam)
 plot(GS.gam, residuals=TRUE, pch=1)
-
+gam.check(GS.gam)
+##not sure if this model is valid based on the gam.check report on convergence
+##diagnostic plots not looking so great
 
 GS.lm2<-lm(data$nearest_M~data$BD*data$Income)
 summary(GS.lm2)
