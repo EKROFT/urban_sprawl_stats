@@ -32,8 +32,9 @@ summary(lm.no2.ranked)
 plot(lm.no2.ranked)
 ##rank transform helped but still not perfect
 
-NO2.gam<-gam(data$NO2_mean~data$BD+s(data$petrochem_distance)+
-               s(data$Income), method="REML")
+library(mgcv)
+NO2.gam<-gam(data$NO2_mean~data$BD+s(data$petrochem_distance, k=9)+
+               s(data$Income, k=30))
 summary(NO2.gam)
 coef(NO2.gam)
 plot(NO2.gam)
