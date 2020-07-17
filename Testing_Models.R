@@ -34,7 +34,7 @@ plot(lm.no2.ranked)
 
 library(mgcv)
 NO2.gam<-gam(data$NO2_mean~data$BD+s(data$petrochem_distance, k=9)+
-               s(data$Income, k=30))
+               s(data$Income, k=27))
 summary(NO2.gam)
 coef(NO2.gam)
 plot(NO2.gam)
