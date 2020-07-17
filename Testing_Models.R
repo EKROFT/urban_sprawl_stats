@@ -1,12 +1,19 @@
 data<-read.csv("shortlist_data_0715.csv")
 View(data)
 
+data2<-read.csv(file.choose())
+
 ###################LST#######################
 LST.model<-lm(data$LST_mean~data$X.canopy+data$Imp.+data$BD+data$Income+data$river.distance..meters.)
 summary(LST.model)
 plot(LST.model)
 
+LST2.model<-lm(data2$LST_mean~data2$X.canopy+data2$Imp.+data2$BD+data2$Income+data2$river.distance..meters.)
+summary(LST2.model)
+plot(LST2.model)
+
 ##the diagnostic plots actually look good here, a linear model could work well
+##worked with both shortlist and longlist data
 
 ##############################NO2######################
 NO2.model<-lm(data$NO2_mean~data$Road.+data$Income+data$petrochem_distance+data$BD)
