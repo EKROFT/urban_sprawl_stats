@@ -1,7 +1,7 @@
 data<-read.csv("shortlist_data_0715.csv")
-View(data)
+#View(data)
 
-data2<-read.csv(file.choose())
+data2<-read.csv("full_data_0710.csv")
 
 ###################LST#######################
 LST.model<-lm(data$LST_mean~data$X.canopy+data$Imp.+data$BD+data$Income+data$river.distance..meters.)
@@ -42,7 +42,7 @@ plot(NO2.gam)
 plot(NO2.gam, residuals=TRUE, pch=1, seWithMean = TRUE)
 
 gam.check(NO2.gam)
-##not sure about some of these diagnostic plots
+##not sure about some of these diagnostic plots, they look pretty decent but not perfect
 
 ##########################GS#######################
 GS.model<-lm(sqrt(data$nearest_M)~data$BD+data$Income)
@@ -58,8 +58,17 @@ summary(GS.gam)
 plot(GS.gam, residuals=TRUE, pch=1)
 gam.check(GS.gam)
 ##not sure if this model is valid based on the gam.check report on convergence
-##diagnostic plots not looking so great
+##diagnostic plots not looking so great, maybe don't use this
 
-GS.lm2<-lm(data$nearest_M~data$BD*data$Income)
+GS.lm2<-lm(sqrt(data$nearest_M)~data$BD*data$Income)
 summary(GS.lm2)
-##still not great but better than first model
+plot(GS.lm2)
+##still not great but better than first linear model, qqplot doesn't look normal
+
+GS.ranked<-rank(data$nearest_M)
+GS.ranked.data<-data.frame(GS=GS.ranked, Income=data$Income, BD=data$BD)
+View(GS.ranked.data)
+GS.lm2.ranked<-lm(GS.ranked.data$GS~GS.ranked.data$Income*GS.ranked.data$BD)
+plot(GS.lm2.ranked)
+summary(GS.lm2.ranked)
+##same issue as above, qqplot doesn't look normal
