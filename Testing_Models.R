@@ -2,6 +2,7 @@ data<-read.csv("shortlist_data_0715.csv")
 #View(data)
 
 data2<-read.csv("full_data_0710.csv")
+#View(data2)
 
 ###################LST#######################
 LST.model<-lm(data$LST_mean~data$X.canopy+data$Imp.+data$BD+data$Income+data$river.distance..meters.)
@@ -36,13 +37,22 @@ library(mgcv)
 NO2.gam<-gam(data$NO2_mean~data$BD+s(data$petrochem_distance, k=9)+
                s(data$Income, k=27))
 summary(NO2.gam)
-coef(NO2.gam)
 plot(NO2.gam)
 
 plot(NO2.gam, residuals=TRUE, pch=1, seWithMean = TRUE)
 
 gam.check(NO2.gam)
 ##not sure about some of these diagnostic plots, they look pretty decent but not perfect
+
+NO2.gam2<-gam(data2$NO2_mean~data2$BD+s(data2$petrochem_distance, k=9)+
+                s(data2$Income, k=35))
+summary(NO2.gam2)
+
+gam.check(NO2.gam2)
+
+plot(NO2.gam2, residuals=TRUE, pch=1, shade = TRUE, shade.col="blue")
+
+##seems to work on full dataset too, but I had to increase k even more for income
 
 ##########################GS#######################
 GS.model<-lm(sqrt(data$nearest_M)~data$BD+data$Income)
