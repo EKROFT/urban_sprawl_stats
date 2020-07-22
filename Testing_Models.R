@@ -76,7 +76,6 @@ GS.gam<-gam(data$nearest_M~s(data$BD)+s(data$Income))
 summary(GS.gam)
 plot(GS.gam, residuals=TRUE, pch=1)
 gam.check(GS.gam)
-##not sure if this model is valid based on the gam.check report on convergence
 ##diagnostic plots not looking so great, maybe don't use this
 
 GS.lm2<-lm(sqrt(data$nearest_M)~data$BD*data$Income)
