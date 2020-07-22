@@ -54,6 +54,15 @@ plot(NO2.gam2, residuals=TRUE, pch=1, shade = TRUE, shade.col="blue")
 
 ##seems to work on full dataset too, but I had to increase k even more for income
 
+##want to check what happens if I remove BD from the equation:
+
+NO2.gam3<-gam(data2$NO2_mean~s(data2$petrochem_distance, k=9)+
+                s(data2$Income, k=28))
+summary(NO2.gam3)
+gam.check(NO2.gam3)
+
+##basically same result but I was able to make k lower, deviance explained increased by <1%
+
 ##########################GS#######################
 GS.model<-lm(sqrt(data$nearest_M)~data$BD+data$Income)
 summary(GS.model)
@@ -67,7 +76,6 @@ GS.gam<-gam(data$nearest_M~s(data$BD)+s(data$Income))
 summary(GS.gam)
 plot(GS.gam, residuals=TRUE, pch=1)
 gam.check(GS.gam)
-##not sure if this model is valid based on the gam.check report on convergence
 ##diagnostic plots not looking so great, maybe don't use this
 
 GS.lm2<-lm(sqrt(data$nearest_M)~data$BD*data$Income)
@@ -82,3 +90,5 @@ GS.lm2.ranked<-lm(GS.ranked.data$GS~GS.ranked.data$Income*GS.ranked.data$BD)
 plot(GS.lm2.ranked)
 summary(GS.lm2.ranked)
 ##same issue as above, qqplot doesn't look normal
+
+##I'm starting to think the GS data might just have no pattern?
