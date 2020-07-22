@@ -90,3 +90,5 @@ GS.lm2.ranked<-lm(GS.ranked.data$GS~GS.ranked.data$Income*GS.ranked.data$BD)
 plot(GS.lm2.ranked)
 summary(GS.lm2.ranked)
 ##same issue as above, qqplot doesn't look normal
+
+##I'm starting to think the GS data might just have no pattern?
