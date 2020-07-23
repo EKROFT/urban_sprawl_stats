@@ -15,6 +15,14 @@ plot(LST2.model)
 
 ##the diagnostic plots actually look good here, a linear model could work well
 ##worked with both shortlist and longlist data
+##all variables included had significant p values, removing any weakened the model
+
+##testing out some possible interactions:
+
+LST3.model<-lm(data$LST_mean~(data$X.canopy*data$Imp.)+data$BD+data$Income+data$river.distance..meters.)
+summary(LST3.model)
+##the interaction is not significant, makes the model weaker
+
 
 ##############################NO2######################
 NO2.model<-lm(data$NO2_mean~data$Road.+data$Income+data$petrochem_distance+data$BD)
@@ -22,6 +30,9 @@ summary(NO2.model)
 plot(NO2.model)
 ##diagnostics don't look so great
 ##log transform didn't help, neither did sqrt
+##including canopy cover weakened the model
+##inclduing impervious cover made no difference to the model
+##inclduing NDVI weakened the model
 
 NO2.ranked<-rank(data$NO2_mean)
 ranked.data<-data.frame(NO2_mean=data$NO2_mean, NO2_ranked=NO2.ranked, income=data$Income,
@@ -35,17 +46,20 @@ plot(lm.no2.ranked)
 
 library(mgcv)
 NO2.gam<-gam(data$NO2_mean~data$BD+s(data$petrochem_distance, k=9)+
-               s(data$Income, k=27))
+               s(data$Income, k=27)+s(data$Imp., k=9)
+               +data$Road.+data$X.canopy)
 summary(NO2.gam)
 plot(NO2.gam)
 
 plot(NO2.gam, residuals=TRUE, pch=1, seWithMean = TRUE)
 
 gam.check(NO2.gam)
-##not sure about some of these diagnostic plots, they look pretty decent but not perfect
+##diagnostic plots look pretty good
+##including NDVI did not change the model
 
 NO2.gam2<-gam(data2$NO2_mean~data2$BD+s(data2$petrochem_distance, k=9)+
-                s(data2$Income, k=35))
+                s(data2$Income, k=35)+s(data2$Imp., k=9)
+              +data2$Road.+data2$X.canopy)
 summary(NO2.gam2)
 
 gam.check(NO2.gam2)
@@ -93,3 +107,13 @@ summary(GS.lm2.ranked)
 
 ##Trying GS as continuous variable:
 plot(data$Distance_M~data$BD)
+GS<-lm(Distance_M~BD+Income, data=data)
+summary(GS)
+plot(GS)
+##definitely not normally distributed 
+
+GS.cont.gam<-gam(Distance_M~BD+s(Income), data=data, method="REML")
+plot(GS.cont.gam)
+summary(GS.cont.gam)
+gam.check(GS.cont.gam)
+##doesn't look too good
