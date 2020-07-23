@@ -108,7 +108,11 @@ summary(GS.lm2.ranked)
 
 ##Trying GS as continuous variable:
 plot(data$Distance_M~data$BD)
+abline(GS0)
 GS<-lm(Distance_M~BD+Income, data=data)
+GS0<-lm(Distance_M~BD, data=data)
+summary(GS0)
+plot(GS0)
 summary(GS)
 plot(GS)
 ##definitely not normally distributed 
@@ -118,3 +122,4 @@ plot(GS.cont.gam)
 summary(GS.cont.gam)
 gam.check(GS.cont.gam)
 ##doesn't look too good
+
