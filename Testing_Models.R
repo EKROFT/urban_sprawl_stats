@@ -1,7 +1,7 @@
-data<-read.csv("shortlist_data_0715.csv")
+data<-read.csv("shortlist_data_0723.csv")
 #View(data)
 
-data2<-read.csv("full_data_0710.csv")
+data2<-read.csv("compiled_data_0723.csv")
 #View(data2)
 
 ###################LST#######################
@@ -91,4 +91,5 @@ plot(GS.lm2.ranked)
 summary(GS.lm2.ranked)
 ##same issue as above, qqplot doesn't look normal
 
-##I'm starting to think the GS data might just have no pattern?
+##Trying GS as continuous variable:
+plot(data$Distance_M~data$BD)
