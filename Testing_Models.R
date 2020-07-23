@@ -47,7 +47,7 @@ plot(lm.no2.ranked)
 library(mgcv)
 NO2.gam<-gam(data$NO2_mean~data$BD+s(data$petrochem_distance, k=9)+
                s(data$Income, k=27)+s(data$Imp., k=9)
-               +data$Road.+data$X.canopy)
+               +data$X.canopy)
 summary(NO2.gam)
 plot(NO2.gam)
 
@@ -56,10 +56,11 @@ plot(NO2.gam, residuals=TRUE, pch=1, seWithMean = TRUE)
 gam.check(NO2.gam)
 ##diagnostic plots look pretty good
 ##including NDVI did not change the model
+##removing Road% had no impact on the model
 
 NO2.gam2<-gam(data2$NO2_mean~data2$BD+s(data2$petrochem_distance, k=9)+
                 s(data2$Income, k=35)+s(data2$Imp., k=9)
-              +data2$Road.+data2$X.canopy)
+              +data2$X.canopy)
 summary(NO2.gam2)
 
 gam.check(NO2.gam2)
