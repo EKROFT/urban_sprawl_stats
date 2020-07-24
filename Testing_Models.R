@@ -123,3 +123,4 @@ summary(GS.cont.gam)
 gam.check(GS.cont.gam)
 ##doesn't look too good
 
+
