@@ -129,3 +129,4 @@ plot(data2$GS.~data2$BD)
 abline(GS_percent)
 summary(GS_percent)
 ##no trends with either BD or Income
+
