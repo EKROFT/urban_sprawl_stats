@@ -1,7 +1,7 @@
-data<-read.csv("Data/shortlist_data_0723.csv")
+data<-read.csv("Data/shortlist_data_0727.csv")
 #View(data)
 
-data2<-read.csv("Data/compiled_data_0723.csv")
+data2<-read.csv("Data/compiled_data_0727.csv")
 #View(data2)
 
 ###################LST#######################
@@ -123,4 +123,10 @@ summary(GS.cont.gam)
 gam.check(GS.cont.gam)
 ##doesn't look too good
 
+##Testing new GS metric
+GS_percent<-lm(data2$GS.~data2$BD)
+plot(data2$GS.~data2$BD)
+abline(GS_percent)
+summary(GS_percent)
+##no trends with either BD or Income
 
