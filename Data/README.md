@@ -1,8 +1,8 @@
 This folder contains all the data used in my analyses.
 
-All filed titled "Compiled Data" are full datasets that include all data available for all study sites.
+All files titled "Compiled Data" are full datasets that include all data available for all study sites.
 
-All filed titled "Shortlist Data" are reduced datasets in which I set aside 10% of the study sites to avoid overfitting my models.
+All files titled "Shortlist Data" are reduced datasets in which I set aside 10% of the study sites to avoid overfitting my models.
 
 The last 4 numbers refer to the date in 2020 in which the file was created (ie: "compiled_data_0727.csv" is a full dataset that was created on July 27th, 2020).
 
