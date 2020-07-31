@@ -8,3 +8,5 @@ The last 4 numbers refer to the date in 2020 in which the file was created (ie: 
 
 Reduced_No2_Data: This is an experimental dataset in which I removed all study sites in NE Montreal to see if this changed any air quality trends (by
 removing sites close to the large petrochemical facility).
+
+weighted_NO2_Data: This is the data with an added column in which I applied weights to the NO2 measurements according to distance from the petrochemical facility.
