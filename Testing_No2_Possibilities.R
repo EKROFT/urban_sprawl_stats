@@ -80,7 +80,7 @@ abline(v)
 library(GGally)
 library(tidyverse)
 
-gally.data<-data%>%select(BD, Income, petrochem_distance, NDVImean, X.canopy, Imp.)
+gally.data<-data%>%select(Income, petrochem_distance, NDVImean, X.canopy, Imp.)
 ggpairs(gally.data)
 ##Distance to petrochem facility is significantly correlated with all these variables.
 ##Could this colinearity be an explanation for weird patterns I'm seeing?
