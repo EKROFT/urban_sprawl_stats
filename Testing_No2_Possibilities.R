@@ -28,7 +28,7 @@ summary(air.lm4)
 ##by their distance to the petrochemical facility. 
 
 ##Testing weighted values
-weights.no2<-read.csv(file.choose())
+weights.no2<-read.csv("Data/weighted_NO2_data.csv")
 air.lm.weights<-lm(weights.no2$weightNO2~weights.no2$BD+weights.no2$Road.+weights.no2$Income)
 summary(air.lm.weights)
 plot(air.lm.weights, which=3)
