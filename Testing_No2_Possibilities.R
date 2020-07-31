@@ -72,6 +72,19 @@ plot(log(weightNO2)~log(X.canopy), data=weights.no2)
 abline(s)
 #I logged the data here to help me see the dots better, not for real statistical purposes
 
+v<-lm(Income~petrochem_distance, data=data)
+summary(v)
+plot(Income~petrochem_distance, data=data)
+abline(v)
+
+library(GGally)
+library(tidyverse)
+
+gally.data<-data%>%select(Income, petrochem_distance, NDVImean, X.canopy, Imp.)
+ggpairs(gally.data)
+##Distance to petrochem facility is significantly correlated with all these variables.
+##Could this colinearity be an explanation for weird patterns I'm seeing?
+
 ####IMPORTANT NOTES################
 #The way the reality of the city is, distance to the petrochemical facility
 #is the only real controlling factor over NO2 pollution. This effect is so strong that
