@@ -1,5 +1,5 @@
 ##I clipped the raster image to exclude the NE of the island to see what the pattern would be
-##in the absence of the pterochem facility's influence
+##in the absence of the petrochem facility's influence
 
 datas<-read.csv("Data/Reduced_NO2_Data.csv")
 View(datas)
