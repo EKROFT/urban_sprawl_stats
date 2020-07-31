@@ -23,6 +23,15 @@ LST3.model<-lm(data$LST_mean~(data$X.canopy*data$Imp.)+data$BD+data$Income+data$
 summary(LST3.model)
 ##the interaction is not significant, makes the model weaker
 
+library(mgcv)
+Lst.gam<-gam(LST_mean~X.canopy+Imp.+s(BD)+Income+
+               s(river.distance..meters.), data=data,
+             method="REML")
+summary(Lst.gam)
+gam.check(Lst.gam)
+plot(Lst.gam)
+##gam model isn't really better than linear model (adj. r2 were 0.01 different)
+##according to gam, the terms all either linear or nearly linear
 
 ##############################NO2######################
 NO2.model<-lm(data$NO2_mean~data$Road.+data$Income+data$petrochem_distance+data$BD)
