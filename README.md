@@ -13,3 +13,5 @@ data_exploration.r: This is the file where I looked at my data for the first tim
 
 Testing_NO2_Possibilities: For this file I clipped the NO2 data to exclude all sites in the NE of Montreal to see what the NO2 patterns would look like without
 the influence of the large petrochemical facility.
+
+Models_to_Use.r: I organized the best models so far into a separate r script for ease of fidning them later.
