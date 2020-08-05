@@ -126,7 +126,7 @@ summary(GS)
 plot(GS)
 ##definitely not normally distributed 
 
-GS.cont.gam<-gam(Distance_M~BD+s(Income), data=data, method="REML")
+GS.cont.gam<-gam(Distance_M~BD+s(Income, k=30), data=data)
 plot(GS.cont.gam)
 summary(GS.cont.gam)
 gam.check(GS.cont.gam)
