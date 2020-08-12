@@ -5,9 +5,18 @@ data2<-read.csv("Data/compiled_data_0727.csv")
 #View(data2)
 
 ###################LST#######################
-LST.model<-lm(data$LST_mean~data$X.canopy+data$Imp.+data$BD+data$Income+data$river.distance..meters.)
+LST.model<-lm(data$LST_mean~data$X.canopy+data$BD+data$Income+data$river.distance..meters.)
 summary(LST.model)
 plot(LST.model)
+
+gally.lst<-data%>%select(Income, BD, river.distance..meters., X.canopy, Imp.)
+ggpairs(gally.lst)
+
+#percent canopy and impervious cover are highly correlated, should remove one from model.
+#I removed Impervious from the model and left canopy cover.
+
+car::vif(LST.model)
+#multicolinearity not an issue
 
 ##############################NO2######################
 library(mgcv)
