@@ -15,6 +15,7 @@ ggpairs(gally.lst)
 #percent canopy and impervious cover are highly correlated, should remove one from model.
 #I removed Impervious from the model and left canopy cover.
 
+library(caret)
 
 ##############################NO2######################
 library(mgcv)
