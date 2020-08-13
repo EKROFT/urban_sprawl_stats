@@ -1,37 +1,35 @@
-##This script is just me learning, nothing in it has worked so far
-
-
-
 ##read in data and packages
 data<-read.csv("Data/Study_Site_coords.csv")
-install.packages("spdep")
-library(spdep)
-install.packages("rgdal")
-library(rgdal)
-library(sf)
-install.packages("tmap")
-library(tmap)
-library(tidyverse)
-library(raster)
-shapes<-st_read("site_coords.gpkg")
+library(gstat)
 
-##select relevant columns
-data<-shapes%>%select(id)
+######LST#####################
 
-##get coordinates and plot them
-xy<-st_coordinates(data)
-plot(xy, cex=1, pch=20, col='green')
+#set up variogram
+breaks = seq(0, 1.5, l = 2)
 
+bubble(data, zcol='LST_mean', fill=TRUE, do.sqrt=FALSE, maxsize=3)
 
-w<-poly2nb(data, row.names = data$id)
-class(w)
-summary(w)
+#plot variogram
+TheVariogram=variogram(LST_mean~1, data=data)
+plot(TheVariogram)
 
-ww<-nb2listw(w)
+#make variogram model
+TheVariogramModel <- vgm(psill=7, model="Exp", nugget=4.2, range=10000)
+plot(TheVariogram, model=TheVariogramModel) 
 
-#map LST
-tm_shape(shapes) + tm_polygons(style="quantile", col = "LST_mean") +
-  tm_legend(outside = FALSE, text.size = .8) 
+####NO2###################
 
+#set up variogram
+breaks = seq(0, 1.5, l = 2)
 
+bubble(data, zcol='NO2_mean', fill=TRUE, do.sqrt=FALSE, maxsize=3)
 
+#plot variogram
+TheVariogram=variogram(NO2_mean~1, data=data)
+plot(TheVariogram)
+TheVariogram
+
+#make variogram model
+TheVariogramModel <- vgm(psill=3e-11, model="Exp",
+                         nugget=5e-12, range=15000)
+plot(TheVariogram, model=TheVariogramModel)
