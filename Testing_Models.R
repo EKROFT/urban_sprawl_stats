@@ -1,7 +1,7 @@
-data<-read.csv("Data/shortlist_data_0727.csv")
-#View(data)
+data<-read.csv("Data/shortlist_data_0813.csv")
+View(data)
 
-data2<-read.csv("Data/compiled_data_0727.csv")
+data2<-read.csv("Data/compiled_data_0813.csv")
 #View(data2)
 
 ###################LST#######################
