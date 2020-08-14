@@ -49,7 +49,7 @@ library(ape)
 
 test.dists.inv[is.infinite(test.dists.inv)] <- 0
 
-Moran.I(dataset$NO2_mean, test.dists.inv)
+Moran.I(dataset$LST_mean, test.dists.inv)
 
 
 #modelling residuals
@@ -57,14 +57,14 @@ Moran.I(dataset$NO2_mean, test.dists.inv)
 #LST model
 LST.model<-lm(data$LST_mean~data$X.canopy+data$Imp.+data$BD+data$river.distance..meters.)
 summary(LST.model)
-View(dataset)
 library(nlme)
 
 coordinates(data)<-c('Long','Lat')
+resids<-residuals(LST.model)
+data$resids=resids
 bubble(data,zcol='resids')
-data$resids=resid
-V<-variogram(resid~1, data=data)
-plot(V, pch=16)
+V<-variogram(resids~1, data=data)
+plot(V, pch=16, col="black")
 VariogramModel <- fit.variogram(V, vgm("Sph"))
 plot(V, model=VariogramModel, pch=16, col="black")
 
