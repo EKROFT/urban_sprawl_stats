@@ -10,3 +10,6 @@ Reduced_No2_Data: This is an experimental dataset in which I removed all study s
 removing sites close to the large petrochemical facility).
 
 weighted_NO2_Data: This is the data with an added column in which I applied weights to the NO2 measurements according to distance from the petrochemical facility.
+
+study_site_coords: This is a file containing the geographic coordinates of each study site. These coordinates are now included in the full and compiled datasets
+as the "Lat" and "Long" columns (as of August 1, 2020). 
