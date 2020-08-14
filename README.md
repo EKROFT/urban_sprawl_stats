@@ -15,3 +15,7 @@ Testing_NO2_Possibilities: For this file I clipped the NO2 data to exclude all s
 the influence of the large petrochemical facility.
 
 Models_to_Use.r: I organized the best models so far into a separate r script for ease of fidning them later.
+
+spatial_testing.r: This is the script where I tested the data and models for spatial autocorrelation.
+
+site_coords.gpkg / site_coords.shp: This is the GIS file containing the geographic coordinates for each study site (both gpkg and shp available).
