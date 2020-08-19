@@ -14,7 +14,7 @@ data.selected.LST<-
 GGally::ggpairs(data.selected.LST)
 
 data.selected.NO2<-
-  data%>%select(BD,NO2_mean,Income,petrochem_distance, Imp.)
+  data%>%select(BD,NO2_mean,Income,petrochem_distance, Imp., X.canopy)
 GGally::ggpairs(data.selected.NO2)
 
 
