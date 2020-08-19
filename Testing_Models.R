@@ -62,7 +62,9 @@ plot(NO2.gam)
 
 plot(NO2.gam, residuals=TRUE, pch=1, seWithMean = TRUE)
 
+par(mfrow=c(2,2))
 gam.check(NO2.gam)
+concurvity(NO2.gam)
 ##diagnostic plots look pretty good
 ##including NDVI did not change the model
 ##removing Road% had no impact on the model

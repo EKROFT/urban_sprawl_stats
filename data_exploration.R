@@ -1,4 +1,4 @@
-data<-read.csv("compiled_data_0710.csv")
+data<-read.csv("Data/shortlist_data_0813.csv")
 View(data)
 
 
@@ -14,7 +14,7 @@ data.selected.LST<-
 GGally::ggpairs(data.selected.LST)
 
 data.selected.NO2<-
-  data%>%select(BD,NO2_mean,Income,petrochem_distance, Imp.)
+  data%>%select(BD,NO2_mean,Income,petrochem_distance, Imp., X.canopy)
 GGally::ggpairs(data.selected.NO2)
 
 
