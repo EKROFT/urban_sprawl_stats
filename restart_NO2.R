@@ -26,6 +26,8 @@ summary(no2.gam3)
 #interaction between imp. and canopy seems less important
 
 anova(no2.gam,no2.gam2,no2.gam3, test="Chisq")
+anova(no2.gam, no2.gam2, test="Chisq")
+anova(no2.gam, no2.gam3, test="Chisq")
 #appears that model with no interactions is best so far.
 
 ##trying removing variables
@@ -33,21 +35,25 @@ no2.gam4<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+s(Imp.)+s(petrochem_distance)
                 s(Road.), data=no2.data, method="REML")
 summary(no2.gam4)
 anova(no2.gam, no2.gam4, test="Chisq")
-#simpler model is better
+#simpler model is better (removed distance to road)
 
 no2.gam5<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+s(Imp.)+s(petrochem_distance)+
                s(road.distance..meters.), data=no2.data, method="REML")
 anova(no2.gam,no2.gam4, no2.gam5, test="Chisq")
+anova(no2.gam, no2.gam4, test="Chisq")
+anova(no2.gam, no2.gam5, test="Chisq")
 #model no2.gam4 is better than model 0 or model 5
 
 no2.gam6<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+s(petrochem_distance)+
                 s(Road.), data=no2.data, method="REML")
 anova(no2.gam,no2.gam4, no2.gam6, test="Chisq")
+anova(no2.gam4, no2.gam6, test="Chisq")
 #model that includes imp. seems stronger
 
 no2.gam7<-gam(NO2_mean~s(BD)+s(Income)+s(Imp.)+s(petrochem_distance)+
                 s(Road.), data=no2.data, method="REML")
 anova(no2.gam, no2.gam4, no2.gam7, test="Chisq")
+anova(no2.gam4, no2.gam7, test="Chisq")
 #model including canopy cover seems stronger
 
 #no2.gam4 seems to be the winner so far
@@ -61,8 +67,12 @@ concurvity(no2.gam4, full=FALSE)
 gam.check(no2.gam6)
 concurvity(no2.gam6, full=TRUE)
 #this model gets rid of the concurvity
-anova(no2.gam4, no2.gam6)
+anova(no2.gam4, no2.gam6, test="Chisq")
 #these models seem to be almost the same so the one without concurvity is probably better (6)
+
+vis.gam(no2.gam6, view=c("petrochem_distance", "Income"), color="heat", plot.type="persp",
+        theta=140, ticktype="detailed")
+
 
 library(nlme)
 library(gstat)
@@ -93,3 +103,5 @@ Moran.I(no2.data$resids, test.dists.inv)
 #Moran's I seems to confirm this
 
 #will have to account for spatial autocorrelation in the model
+
+

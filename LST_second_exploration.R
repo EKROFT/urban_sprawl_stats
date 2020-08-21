@@ -31,6 +31,7 @@ anova(lst.model,lst.model2)
 ##checking model assumptions
 plot(lst.model, which=2)
 plot(lst.model, which=3)
+#diagnostics don't look awesome
 
 ##now testing models with interactions
 
