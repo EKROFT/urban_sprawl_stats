@@ -71,7 +71,7 @@ anova(no2.gam4, no2.gam6, test="Chisq")
 #these models seem to be almost the same so the one without concurvity is probably better (6)
 
 vis.gam(no2.gam6, view=c("petrochem_distance", "Income"), color="heat", plot.type="persp",
-        theta=140, ticktype="detailed")
+        theta=140)
 
 
 library(nlme)
