@@ -15,13 +15,14 @@ no2.gam<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+s(Imp.)+s(petrochem_distance)+
 summary(no2.gam)
 gam.check(no2.gam)
 
-no2.gam2<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Imp.)+s(petrochem_distance, Income)+
-                s(road.distance..meters.)+s(Road.), data=no2.data, method="REML")
+no2.gam2<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Imp.)+s(petrochem_distance)+s(Income)+
+                s(road.distance..meters.)+s(Road.)+ti(petrochem_distance, Income), data=no2.data, method="REML")
 summary(no2.gam2)
-#looks like there is an important interaction between income and petrochem_distance
+#interaction term not very significant
 
-no2.gam3<-gam(NO2_mean~s(BD)+s(X.canopy, Imp.)+s(petrochem_distance, Income)+
-                s(road.distance..meters.)+s(Road.), data=no2.data, method="REML")
+no2.gam3<-gam(NO2_mean~s(BD)+s(X.canopy)+s (Imp.)+s(petrochem_distance)+s(Income)+
+                s(road.distance..meters.)+s(Road.)+
+                ti(X.canopy, Imp.), data=no2.data, method="REML")
 summary(no2.gam3)
 #interaction between imp. and canopy seems less important
 
