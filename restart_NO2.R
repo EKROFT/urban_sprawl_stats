@@ -104,5 +104,24 @@ Moran.I(no2.data$resids, test.dists.inv)
 #Moran's I seems to confirm this
 
 #will have to account for spatial autocorrelation in the model
+coords<-coordinates(no2.data)
 
+no2.gam8<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+s(petrochem_distance)+
+                s(Road.)+s(coords), data=no2.data, method="REML")
+summary(no2.gam8)
+gam.check(no2.gam8)
+concurvity(no2.gam8)
+#distance and coords have high concurvity
 
+no2.gam9<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+
+                s(Road.)+s(coords), data=no2.data, method="REML")
+summary(no2.gam9)
+gam.check(no2.gam9)
+concurvity(no2.gam9)
+#this model gets rid of concurvity
+
+anova(no2.gam9, no2.gam8, test="Chisq")
+AIC(no2.gam9)
+AIC(no2.gam8)
+AIC(no2.gam6)
+##model 8 seems to be the strongest
