@@ -131,4 +131,4 @@ no2.gam10<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+
 gam.check(no2.gam10)
 #diagnostic plot for normality doesn't look great
 summary(no2.gam10)
-
+plot(no2.gam10)
