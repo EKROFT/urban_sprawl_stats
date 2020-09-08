@@ -74,3 +74,17 @@ Moran.I(lst.data$resids, test.dists.inv)
 #Moran's I seems to indicate that there is spatial autocorrelation in the model residuals
 
 #Model assumptions of independent observations not being met, need to account for this
+
+coords<-coordinates(lst.data)
+
+lst.model7<-lm(LST_mean~BD+X.canopy+Income+river.distance..meters.+Imp.+coords, data=lst.data)
+summary(lst.model7)
+
+anova(lst.model, lst.model7, test="Chisq")
+AIC(lst.model)
+AIC(lst.model7)
+#model with spatial term is stronger
+
+plot(lst.model7, which=2)
+plot(lst.model7, which=3)
+#not looking normally distributed

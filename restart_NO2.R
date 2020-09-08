@@ -15,13 +15,14 @@ no2.gam<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+s(Imp.)+s(petrochem_distance)+
 summary(no2.gam)
 gam.check(no2.gam)
 
-no2.gam2<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Imp.)+s(petrochem_distance, Income)+
-                s(road.distance..meters.)+s(Road.), data=no2.data, method="REML")
+no2.gam2<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Imp.)+s(petrochem_distance)+s(Income)+
+                s(road.distance..meters.)+s(Road.)+ti(petrochem_distance, Income), data=no2.data, method="REML")
 summary(no2.gam2)
-#looks like there is an important interaction between income and petrochem_distance
+#interaction term not very significant
 
-no2.gam3<-gam(NO2_mean~s(BD)+s(X.canopy, Imp.)+s(petrochem_distance, Income)+
-                s(road.distance..meters.)+s(Road.), data=no2.data, method="REML")
+no2.gam3<-gam(NO2_mean~s(BD)+s(X.canopy)+s (Imp.)+s(petrochem_distance)+s(Income)+
+                s(road.distance..meters.)+s(Road.)+
+                ti(X.canopy, Imp.), data=no2.data, method="REML")
 summary(no2.gam3)
 #interaction between imp. and canopy seems less important
 
@@ -71,7 +72,7 @@ anova(no2.gam4, no2.gam6, test="Chisq")
 #these models seem to be almost the same so the one without concurvity is probably better (6)
 
 vis.gam(no2.gam6, view=c("petrochem_distance", "Income"), color="heat", plot.type="persp",
-        theta=140, ticktype="detailed")
+        theta=140)
 
 
 library(nlme)
@@ -103,5 +104,24 @@ Moran.I(no2.data$resids, test.dists.inv)
 #Moran's I seems to confirm this
 
 #will have to account for spatial autocorrelation in the model
+coords<-coordinates(no2.data)
 
+no2.gam8<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+s(petrochem_distance)+
+                s(Road.)+s(coords), data=no2.data, method="REML")
+summary(no2.gam8)
+gam.check(no2.gam8)
+concurvity(no2.gam8)
+#distance and coords have high concurvity
 
+no2.gam9<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+
+                s(Road.)+s(coords), data=no2.data, method="REML")
+summary(no2.gam9)
+gam.check(no2.gam9)
+concurvity(no2.gam9)
+#this model gets rid of concurvity
+
+anova(no2.gam9, no2.gam8, test="Chisq")
+AIC(no2.gam9)
+AIC(no2.gam8)
+AIC(no2.gam6)
+##model 8 seems to be the strongest
