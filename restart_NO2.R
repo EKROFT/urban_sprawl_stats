@@ -107,14 +107,14 @@ Moran.I(no2.data$resids, test.dists.inv)
 coords<-coordinates(no2.data)
 
 no2.gam8<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+s(petrochem_distance)+
-                s(Road.)+s(coords), data=no2.data, method="REML")
+                s(Road.)+s(Lat,Long), data=no2.data, method="REML")
 summary(no2.gam8)
 gam.check(no2.gam8)
 concurvity(no2.gam8)
 #distance and coords have high concurvity
 
 no2.gam9<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+
-                s(Road.)+s(coords), data=no2.data, method="REML")
+                s(Road.)+s(Lat,Long), data=no2.data, method="REML")
 summary(no2.gam9)
 gam.check(no2.gam9)
 concurvity(no2.gam9)
@@ -124,4 +124,11 @@ anova(no2.gam9, no2.gam8, test="Chisq")
 AIC(no2.gam9)
 AIC(no2.gam8)
 AIC(no2.gam6)
-##model 8 seems to be the strongest
+##model 8 and 9 are very similar. Perhaps I should pick the one without concurvity(9)
+#that being said, I need to adjust k values on that model
+no2.gam10<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+
+                s(Road.)+s(Lat,Long, k=67), data=no2.data, method="REML")
+gam.check(no2.gam10)
+#diagnostic plot for normality doesn't look great
+summary(no2.gam10)
+

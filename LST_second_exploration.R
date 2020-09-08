@@ -77,7 +77,8 @@ Moran.I(lst.data$resids, test.dists.inv)
 
 coords<-coordinates(lst.data)
 
-lst.model7<-lm(LST_mean~BD+X.canopy+Income+river.distance..meters.+Imp.+coords, data=lst.data)
+lst.model7<-lm(LST_mean~Lat*Long+BD+X.canopy+Income+
+                 river.distance..meters.+Imp., data=lst.data)
 summary(lst.model7)
 
 anova(lst.model, lst.model7, test="Chisq")
