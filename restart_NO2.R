@@ -63,16 +63,16 @@ anova(no2.gam, no2.gam6, no2.gam7, test="Chisq")
 anova(no2.gam6, no2.gam7, test="Chisq")
 AIC(no2.gam6)
 AIC(no2.gam7)
-#model excluding canopy cover seems stronger
+#model excluding canopy cover is slightly stronger but based on the literature I
+#think it's important to include
 
-#no2.gam7 seems to be the winner so far
+#no2.gam6 seems to be the winner so far
 
-gam.check(no2.gam7)
-concurvity(no2.gam7, full=TRUE)
-concurvity(no2.gam7, full=FALSE)
+gam.check(no2.gam6)
+concurvity(no2.gam6, full=TRUE)
 
 
-vis.gam(no2.gam7, view=c("petrochem_distance", "Income"), color="heat", plot.type="persp",
+vis.gam(no2.gam6, view=c("petrochem_distance", "Income"), color="heat", plot.type="persp",
         theta=140)
 
 
@@ -82,7 +82,7 @@ library(sp)
 library(ape)
 
 ##checking for spatial autocorrelation
-no2.modelspace<-gam(NO2_mean~s(BD)+s(petrochem_distance)+
+no2.modelspace<-gam(NO2_mean~s(BD)+s(petrochem_distance)+s(X.canopy)+
                       s(road.distance..meters.), data=no2.data, method="REML")
 coordinates(no2.data)<-c('Long','Lat')
 resids<-residuals(no2.modelspace)
@@ -107,14 +107,14 @@ Moran.I(no2.data$resids, test.dists.inv)
 #will have to account for spatial autocorrelation in the model
 coords<-coordinates(no2.data)
 
-no2.gam8<-gam(NO2_mean~s(BD)+s(Income)+s(petrochem_distance)+
+no2.gam8<-gam(NO2_mean~s(BD)+s(Income)+s(petrochem_distance)+s(X.canopy)+
                 s(road.distance..meters.)+s(Lat,Long), data=no2.data, method="REML")
 summary(no2.gam8)
 gam.check(no2.gam8)
 concurvity(no2.gam8)
 #distance and coords have high concurvity
 
-no2.gam9<-gam(NO2_mean~s(BD)+s(Income)+
+no2.gam9<-gam(NO2_mean~s(BD)+s(Income)+s(X.canopy)+
                 s(road.distance..meters.)+s(Lat,Long), data=no2.data, method="REML")
 summary(no2.gam9)
 gam.check(no2.gam9)
@@ -125,10 +125,10 @@ anova(no2.gam9, no2.gam8, test="Chisq")
 AIC(no2.gam9)
 AIC(no2.gam8)
 AIC(no2.gam7)
-##model 8 has lowest AIC but it has that concurvity (not sure which to choose)
-#that being said, I need to adjust k values on that model
-no2.gam10<-gam(NO2_mean~s(BD)+s(Income)+s(petrochem_distance)+
-                s(road.distance..meters.)+s(Lat,Long, k=65), data=no2.data, method="REML")
+##model 8 has lowest AIC but it has concurvity close to 100% so I don't think it's appropriate
+#to include both
+no2.gam10<-gam(NO2_mean~s(BD)+s(Income)+s(road.distance..meters.)+
+                 s(Lat,Long, k=65), data=no2.data, method="REML")
 gam.check(no2.gam10)
 summary(no2.gam10)
 plot(no2.gam10)
