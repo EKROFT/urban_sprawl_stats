@@ -28,6 +28,13 @@ anova(lst.model,lst.model2)
 
 #since the vif showed nothing above 5 for first model, I will keep impervious
 
+#checking if I can remove any variables
+lst.modelf<-lm(LST_mean~BD+X.canopy+river.distance..meters.+Income+Imp., data=lst.data)
+anova(lst.model, lst.modelf)
+AIC(lst.model)
+AIC(lst.modelf)
+#can't remove any variables, tried each of them in turn
+
 ##checking model assumptions
 plot(lst.model, which=2)
 plot(lst.model, which=3)
@@ -43,7 +50,9 @@ lst.model6<-lm(LST_mean~(BD*X.canopy)+Imp.+Income+river.distance..meters., data=
 summary(lst.model6)
 #this BD-canopy cover interaction has a very high p value
 anova(lst.model, lst.model6)
-#model without interaction term is stronger
+AIC(lst.model)
+AIC(lst.model6)
+#model without interaction term is stronger in ANOVA, AIC's are the same
 
 
 library(nlme)
@@ -88,4 +97,4 @@ AIC(lst.model7)
 
 plot(lst.model7, which=2)
 plot(lst.model7, which=3)
-#not looking normally distributed
+#not looking perfect, but also not terrible

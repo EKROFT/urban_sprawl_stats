@@ -7,6 +7,7 @@ data.selected<-no2.data%>%select(NO2_mean,BD, X.canopy,
                                  Income,Imp., petrochem_distance, road.distance..meters.,
                                  Road.)
 GGally::ggpairs(data.selected)
+#hard to tell patterns based off the matrix
 
 ##Testing GAM models
 library(mgcv)
@@ -36,42 +37,42 @@ no2.gam4<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+s(Imp.)+s(petrochem_distance)
                 s(Road.), data=no2.data, method="REML")
 summary(no2.gam4)
 anova(no2.gam, no2.gam4, test="Chisq")
-#simpler model is better (removed distance to road)
+AIC(no2.gam)
+AIC(no2.gam4)
+#more complex model is better
 
 no2.gam5<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+s(Imp.)+s(petrochem_distance)+
                s(road.distance..meters.), data=no2.data, method="REML")
 anova(no2.gam,no2.gam4, no2.gam5, test="Chisq")
 anova(no2.gam, no2.gam4, test="Chisq")
 anova(no2.gam, no2.gam5, test="Chisq")
-#model no2.gam4 is better than model 0 or model 5
+AIC(no2.gam5)
+#model no2.gam and no2.gam5 are the same AIC so I'll choose the simpler one.
 
 no2.gam6<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+s(petrochem_distance)+
-                s(Road.), data=no2.data, method="REML")
+                s(road.distance..meters.), data=no2.data, method="REML")
 anova(no2.gam,no2.gam4, no2.gam6, test="Chisq")
-anova(no2.gam4, no2.gam6, test="Chisq")
-#model that includes imp. seems stronger
+anova(no2.gam5, no2.gam6, test="Chisq")
+AIC(no2.gam5)
+AIC(no2.gam6)
+#model that excludes imp. seems stronger
 
-no2.gam7<-gam(NO2_mean~s(BD)+s(Income)+s(Imp.)+s(petrochem_distance)+
-                s(Road.), data=no2.data, method="REML")
-anova(no2.gam, no2.gam4, no2.gam7, test="Chisq")
-anova(no2.gam4, no2.gam7, test="Chisq")
-#model including canopy cover seems stronger
+no2.gam7<-gam(NO2_mean~s(BD)+s(Income)+s(petrochem_distance)+
+                s(road.distance..meters.), data=no2.data, method="REML")
+anova(no2.gam, no2.gam6, no2.gam7, test="Chisq")
+anova(no2.gam6, no2.gam7, test="Chisq")
+AIC(no2.gam6)
+AIC(no2.gam7)
+#model excluding canopy cover seems stronger
 
-#no2.gam4 seems to be the winner so far
+#no2.gam7 seems to be the winner so far
 
-gam.check(no2.gam4)
-concurvity(no2.gam4, full=TRUE)
-#Impervious cover, BD and canopy cover may have concurvity
-concurvity(no2.gam4, full=FALSE)
-#Impervious seems concurvious with other variables.
+gam.check(no2.gam7)
+concurvity(no2.gam7, full=TRUE)
+concurvity(no2.gam7, full=FALSE)
 
-gam.check(no2.gam6)
-concurvity(no2.gam6, full=TRUE)
-#this model gets rid of the concurvity
-anova(no2.gam4, no2.gam6, test="Chisq")
-#these models seem to be almost the same so the one without concurvity is probably better (6)
 
-vis.gam(no2.gam6, view=c("petrochem_distance", "Income"), color="heat", plot.type="persp",
+vis.gam(no2.gam7, view=c("petrochem_distance", "Income"), color="heat", plot.type="persp",
         theta=140)
 
 
@@ -81,8 +82,8 @@ library(sp)
 library(ape)
 
 ##checking for spatial autocorrelation
-no2.modelspace<-gam(NO2_mean~s(BD)+s(X.canopy)+s(petrochem_distance)+
-                      s(Road.), data=no2.data, method="REML")
+no2.modelspace<-gam(NO2_mean~s(BD)+s(petrochem_distance)+
+                      s(road.distance..meters.), data=no2.data, method="REML")
 coordinates(no2.data)<-c('Long','Lat')
 resids<-residuals(no2.modelspace)
 no2.data$resids=resids
@@ -106,15 +107,15 @@ Moran.I(no2.data$resids, test.dists.inv)
 #will have to account for spatial autocorrelation in the model
 coords<-coordinates(no2.data)
 
-no2.gam8<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+s(petrochem_distance)+
-                s(Road.)+s(Lat,Long), data=no2.data, method="REML")
+no2.gam8<-gam(NO2_mean~s(BD)+s(Income)+s(petrochem_distance)+
+                s(road.distance..meters.)+s(Lat,Long), data=no2.data, method="REML")
 summary(no2.gam8)
 gam.check(no2.gam8)
 concurvity(no2.gam8)
 #distance and coords have high concurvity
 
-no2.gam9<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+
-                s(Road.)+s(Lat,Long), data=no2.data, method="REML")
+no2.gam9<-gam(NO2_mean~s(BD)+s(Income)+
+                s(road.distance..meters.)+s(Lat,Long), data=no2.data, method="REML")
 summary(no2.gam9)
 gam.check(no2.gam9)
 concurvity(no2.gam9)
@@ -123,12 +124,11 @@ concurvity(no2.gam9)
 anova(no2.gam9, no2.gam8, test="Chisq")
 AIC(no2.gam9)
 AIC(no2.gam8)
-AIC(no2.gam6)
-##model 8 and 9 are very similar. Perhaps I should pick the one without concurvity(9)
+AIC(no2.gam7)
+##model 8 has lowest AIC but it has that concurvity (not sure which to choose)
 #that being said, I need to adjust k values on that model
-no2.gam10<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+
-                s(Road.)+s(Lat,Long, k=67), data=no2.data, method="REML")
+no2.gam10<-gam(NO2_mean~s(BD)+s(Income)+s(petrochem_distance)+
+                s(road.distance..meters.)+s(Lat,Long, k=65), data=no2.data, method="REML")
 gam.check(no2.gam10)
-#diagnostic plot for normality doesn't look great
 summary(no2.gam10)
 plot(no2.gam10)
