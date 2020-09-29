@@ -27,6 +27,12 @@ no2.gam3<-gam(NO2_mean~s(BD)+s(X.canopy)+s (Imp.)+s(petrochem_distance)+s(Income
 summary(no2.gam3)
 #interaction between imp. and canopy seems less important
 
+no2.gam.x<-gam(NO2_mean~s(BD)+s(X.canopy)+s (Imp.)+s(petrochem_distance)+s(Income)+
+                s(road.distance..meters.)+s(Road.)+
+                ti(X.canopy, BD), data=no2.data, method="REML")
+summary(no2.gam.x)
+#interaction between BD and canopy seems less important
+
 anova(no2.gam,no2.gam2,no2.gam3, test="Chisq")
 anova(no2.gam, no2.gam2, test="Chisq")
 anova(no2.gam, no2.gam3, test="Chisq")
