@@ -1,0 +1,297 @@
+---
+title: "Emily's Workflow"
+author: "Emily Kroft"
+date: "9/23/2020"
+output:
+  html_document:
+    toc: true
+    toc_depth: 6
+    number_sections: false
+    toc_float: true
+    theme: flatly
+    code_download: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# LST Exploration
+
+## 1
+
+I started out by making a correlation matrix of all the variables I thought might be influencing LST. The variables that seemed to display interesting patterns were: Building Density, Canopy Cover, Impervious Cover, Distance to the River, and Income. 
+
+```{r first model}
+lst.data<-read.csv("Data/shortlist_data_0813.csv")
+library(GGally)
+library(tidyverse)
+data.selected<-lst.data%>%select(LST_mean,BD, X.canopy,
+                                 Income,river.distance..meters.,Imp.)
+GGally::ggpairs(data.selected)
+```
+
+## 2
+
+I created an initial linear model that included all these variables, but no interactions to get an initial idea of how these variables were influencing LST. All the variables had 
+p values <0.05 so I decided to include all of them. 
+
+
+```{r second model}
+lst.model<-lm(LST_mean~BD+X.canopy+Income+river.distance..meters.+Imp., data=lst.data)
+summary(lst.model)
+```
+
+
+## 3
+
+As a next step, I tried adding in some interaction terms that I thought might be 
+important in determining LST.
+
+The first of these was the interaction between impervious cover and canopy cover:
+
+```{r third model}
+lst.model5<-lm(LST_mean~BD+(X.canopy*Imp.)+Income+river.distance..meters., data=lst.data)
+summary(lst.model5)
+```
+
+The second interaction I tried was between building density and canopy cover:
+
+```{r fourth model}
+lst.model6<-lm(LST_mean~(BD*X.canopy)+Imp.+Income+river.distance..meters., data=lst.data)
+summary(lst.model6)
+```
+
+Both of these interactions had quite high p values so I decided against including them
+in the model.
+
+## 4
+
+At this point, I returned to the original model to test for multicolinearity
+
+```{r fifth model}
+lst.model<-lm(LST_mean~BD+X.canopy+Income+river.distance..meters.+Imp., data=lst.data)
+summary(lst.model)
+library(car)
+vif(lst.model)
+```
+
+Canopy cover and impervious cover seemed a little correlated (the same for BD and impervious cover) so I tested a model that removed impervious cover for that reason.
+
+```{r sixth model}
+lst.model2<-lm(LST_mean~BD+X.canopy+Income+river.distance..meters., data=lst.data)
+summary(lst.model2)
+vif(lst.model2)
+```
+
+I then conducted a few model comparisons to see if the model without impervious cover was
+better:
+
+```{r model comparisons}
+anova(lst.model,lst.model2)
+AIC(lst.model, lst.model2)
+```
+
+Based on the importance of impervious cover that has been observed in other LST
+based studies, the model comparisons, as well as the fact that the vif value was relatively low to begin with, I decided to keep impervious cover in my model.
+
+## 5
+
+My next step was the check for spatial auto-correlation in the model residuals using a semivariogram.
+
+```{r spatial autocorrelation, echo=FALSE}
+library(nlme)
+library(gstat)
+library(sp)
+
+lst.model4<-lm(LST_mean~BD+X.canopy+river.distance..meters.+Imp., data=lst.data)
+coordinates(lst.data)<-c('Long','Lat')
+resids<-residuals(lst.model4)
+lst.data$resids=resids
+V<-variogram(resids~1, data=lst.data)
+plot(V, pch=16, col="black")
+```
+
+It looks like there is relatively little spatial auto-correlation in the model residuals so I will not include a spatial term for the time being.
+
+## 6
+
+Next, I needed to check the model's diagnostic plots.
+
+```{r diagnostic plots}
+par(mfrow=c(2,2))
+plot(lst.model)
+```
+
+These plots look pretty good, meaning that the model should be valid.
+
+Based on this, it seems that LST is being mainly determined by a combination of building density and canopy cover. However, not all areas of low building density necessarily have high canopy cover. Because of this, impervious cover is also an important factor to a slightly lesser extent. Distance to the river are also important factors due to the temperature regulating properties of large bodies of water. Income is also a strong predictor variable in this model. I would normally assume that this is because of higher canopy cover and more green space in high income areas. But, in the initial data exploration I found relatively little correlation between income and canopy cover and even less correlation between income and proximity to green spaces. It seems that income must be affecting the physical environment in ways not accounted for in my data.
+
+```{r plot}
+plot(X.canopy~Income, data=lst.data, xlab="Income", ylab="%Canopy Cover")
+```
+
+# NO2 Exploration
+
+## 1
+
+I started out by making a correlation matrix of all the variables I thought might be influencing NO2. The results of this were pretty unclear, with the exception that there was an obvious correlation between NO2 concentrations and distance from the large petrochemical facility. 
+
+```{r gally}
+no2.data<-read.csv("Data/shortlist_data_0813.csv")
+library(GGally)
+library(tidyverse)
+
+data.selected<-no2.data%>%select(NO2_mean,BD, X.canopy,
+                                 Income,Imp., petrochem_distance, road.distance..meters.,
+                                 Road.)
+GGally::ggpairs(data.selected)
+```
+
+## 2
+
+I decided to try modelling this indicator as a GAM. I started with the model:
+
+```{r first NO2 model}
+library(mgcv)
+no2.gam<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+s(Imp.)+s(petrochem_distance)+
+               s(road.distance..meters.)+s(Road.), data=no2.data, method="REML")
+summary(no2.gam)
+```
+
+## 3
+
+Next, I tried adding in a couple interaction terms that I thought might be important. The ones I tried were: `ti(petrochem_distance, Income)`, `ti(X.canopy,BD)` and `ti(X.canopy, Imp.)`. 
+
+```{r interactions}
+no2.gam2<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Imp.)+s(petrochem_distance)+s(Income)+
+                s(road.distance..meters.)+s(Road.)+ti(petrochem_distance, Income), data=no2.data, method="REML")
+summary(no2.gam2)
+
+no2.gam3<-gam(NO2_mean~s(BD)+s(X.canopy)+s (Imp.)+s(petrochem_distance)+s(Income)+
+                s(road.distance..meters.)+s(Road.)+
+                ti(X.canopy, Imp.), data=no2.data, method="REML")
+summary(no2.gam3)
+
+
+no2.gam.x<-gam(NO2_mean~s(BD)+s(X.canopy)+s (Imp.)+s(petrochem_distance)+s(Income)+
+                s(road.distance..meters.)+s(Road.)+
+                ti(X.canopy, BD), data=no2.data, method="REML")
+summary(no2.gam.x)
+```
+
+All interaction terms have very high p values so I did not use either.
+To double check that this was the right decision, I did some model camparisons:
+
+```{r compare the models}
+anova(no2.gam, no2.gam2, test="Chisq")
+anova(no2.gam, no2.gam3, test="Chisq")
+AIC(no2.gam, no2.gam2, no2.gam3)
+```
+
+The results of these comparisons confirm that the interaction terms were not significant to the model.
+
+## 4
+
+Next, I tried removing variables one by one from the model to see if a simpler model might be better. I knew I either wanted to remove Road% or distance to the nearest road since they both measure the presence of roads as a variable.
+
+```{r the roads}
+no2.gam4<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+s(Imp.)+s(petrochem_distance)+
+                s(Road.), data=no2.data, method="REML")
+no2.gam5<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+s(Imp.)+s(petrochem_distance)+
+                s(road.distance..meters.), data=no2.data, method="REML")
+anova(no2.gam, no2.gam4, test="Chisq")
+anova(no2.gam, no2.gam5, test="Chisq")
+AIC(no2.gam,no2.gam4,no2.gam5)
+```
+
+By removing the %road from the model but leaving in the distance to the nearest road, I was able to make the model simpler while maintaining the same AIC value.
+
+Impervious cover and canopy cover were showing quite a bit of concurvity as well so I tried removing each one from the model in turn. 
+
+```{r concurvity and imperviousness}
+concurvity(no2.gam, full=TRUE)
+no2.gam6<-gam(NO2_mean~s(BD)+s(X.canopy)+s(Income)+s(petrochem_distance)+
+                s(road.distance..meters.), data=no2.data, method="REML")
+anova(no2.gam5, no2.gam6, test="Chisq")
+AIC(no2.gam5, no2.gam6)
+#model that excludes imp. seems stronger
+
+no2.gam7<-gam(NO2_mean~s(BD)+s(Income)+s(petrochem_distance)+
+                s(road.distance..meters.), data=no2.data, method="REML")
+anova(no2.gam6, no2.gam7, test="Chisq")
+AIC(no2.gam6, no2.gam7)
+#model excluding canopy cover is slightly stronger
+```
+
+Interestingly, the lowest AIC value and best anova() result came when I removed both variables from the model. That being said, based on the literature I don’t think it would appropriate to remove both these variables from the model, especially since the difference in AIC values was <1. I also don’t think it’s appropriate to include both since they have such high concurvity (>0.8). In the end I included only %canopy cover for 2 reasons: a) canopy cover on its own is widely regarded as important in the literature while impervious cover seems to be mostly important just because it’s the opposite of green space, b) the AIC value was lower for this than when I only included impervious cover.
+
+## 5
+
+The next step was to check for spatial autocorrelation in the model residuals using a semivariogram.
+
+```{r semiv}
+library(nlme)
+library(gstat)
+library(sp)
+library(ape)
+
+no2.modelspace<-gam(NO2_mean~s(BD)+s(petrochem_distance)+s(X.canopy)+
+                      s(road.distance..meters.), data=no2.data, method="REML")
+coordinates(no2.data)<-c('Long','Lat')
+resids<-residuals(no2.modelspace)
+no2.data$resids=resids
+V<-variogram(resids~1, data=no2.data)
+plot(V, pch=16, col="black")
+```
+
+It is quite clear from this plot that spatial autocorrelation is an issue.
+
+## 6
+
+With this in mind, I added a spatial term to the model.
+
+```{r add spatial term}
+no2.gam8<-gam(NO2_mean~s(BD)+s(Income)+s(petrochem_distance)+s(X.canopy)+
+                s(road.distance..meters.)+s(Lat,Long), data=no2.data, method="REML")
+summary(no2.gam8)
+anova(no2.gam6, no2.gam8)
+AIC(no2.gam6, no2.gam8)
+```
+
+The spatial model is clearly stronger than the non-spatial model.
+
+## 7
+
+Next, I did some diagnostics to check this model's validity
+
+```{r concurv}
+gam.check(no2.gam8)
+concurvity(no2.gam8)
+```
+
+There was high concurvity between petrochem_distance and the spatial term. I tried 
+removing the petrochem_distance from the model to get rid of the concurvity. 
+
+```{r remove petrochem}
+no2.gam9<-gam(NO2_mean~s(BD)+s(Income)+s(X.canopy)+
+                s(road.distance..meters.)+s(Lat,Long), data=no2.data, method="REML")
+summary(no2.gam9)
+gam.check(no2.gam9)
+concurvity(no2.gam9)
+```
+
+When I compared the model with petrochem_distance to the one without it, the model including petrochem_distance had a lower AIC value and came up as stronger in the anova().
+
+```{r compare petrochem}
+anova(no2.gam8, no2.gam9, test="Chisq")
+AIC(no2.gam8, no2.gam9)
+```
+
+In the end, after doing some reading on the subject, I don’t think it’s appropriate to include the petrochemical distance in the model for the following reasons: a) The concurvity was >0.99, b) The spatial term measures essentially the same thing as the petrochem_distance term (they both measure the geographic location of sites, just with different units of measurement) so I would essentially be including the same term twice, c) the ultimate reason why the distance to the petrochemical facility matters is that sites that are closer to it would display more similar (higher) values (Tobler’s law). This issue is what using the spatial term is correcting for, so it makes it unnecessary to include the petrochem_distance term. These are the diagnostic plots for the model with no petrochem_distance term after adjusting for the initial `gam.check()` results:
+
+```{r gam plots}
+no2.gam10<-gam(NO2_mean~s(BD)+s(Income)+s(road.distance..meters.)+
+                 s(Lat,Long, k=65), data=no2.data, method="REML")
+gam.check(no2.gam10)
+```
