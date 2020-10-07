@@ -70,5 +70,20 @@ plot6<-ggplot(data, aes(x=Income, y=LST_mean, color=NDVImean)) +
   geom_hline(yintercept=c(35), linetype="dotted")
 plot6+my.theme
 
+#Plot 7: Something about green space
+plot7<-ggplot(data, aes(x=BD, y=Distance_M))+
+  geom_point(size=3)+
+  labs(x="Building Density (%)", y="Distance to the Nearest \nPublic Green Space (m)")+
+  theme_classic()
+plot7+my.theme
+
+#Plot 8: Same thing but categorical
+plot8<-ggplot(data, aes(x=BD, y=nearest_M))+
+  geom_point(size=3)+
+  labs(x="Building Density (%)", y="Distance to the Nearest \nPublic Green Space (minutes)")+
+  theme_classic()
+plot8+my.theme
+
+
 
 
