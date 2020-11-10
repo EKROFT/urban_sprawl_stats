@@ -107,8 +107,7 @@ plot9<-ggplot(data, aes(x=BD, y=Man_GS)) +
   geom_smooth(method=lm, color="black")
 plot9+my.theme
 
-##Plot 10
-
+#Plot 10: Bringing in canopy cover to LST relationship
 plot10<-ggplot(data, aes(x=BD, y=LST_mean, color=X.canopy)) +
   geom_point(size=2)+
   labs(x="Building Density (%)", y="Land Surface Temperature (C)",color="Canopy \nCover (%)")+
