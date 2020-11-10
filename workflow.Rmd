@@ -36,9 +36,11 @@ GGally::ggpairs(data.selected)
 I created an initial linear model that included all these variables, but no interactions to get an initial idea of how these variables were influencing LST. All the variables had 
 p values <0.05 so I decided to include all of them. 
 
+Income and distance to the river were both log transformed to account for the fact that incremental differences make more of an impact at lower numbers (ie: the difference between earning 10,000/yr and 20,000/yr is a big difference but the difference between 110,000/yr vs. 120,000/yr is less significant).
+
 
 ```{r second model}
-lst.model<-lm(LST_mean~BD+X.canopy+Income+river.distance..meters.+Imp., data=lst.data)
+lst.model<-lm(LST_mean~BD+X.canopy+log(Income)+log(river.distance..meters.)+Imp., data=lst.data)
 summary(lst.model)
 ```
 
@@ -51,14 +53,14 @@ important in determining LST.
 The first of these was the interaction between impervious cover and canopy cover:
 
 ```{r third model}
-lst.model5<-lm(LST_mean~BD+(X.canopy*Imp.)+Income+river.distance..meters., data=lst.data)
+lst.model5<-lm(LST_mean~BD+(X.canopy*Imp.)+log(Income)+log(river.distance..meters.), data=lst.data)
 summary(lst.model5)
 ```
 
 The second interaction I tried was between building density and canopy cover:
 
 ```{r fourth model}
-lst.model6<-lm(LST_mean~(BD*X.canopy)+Imp.+Income+river.distance..meters., data=lst.data)
+lst.model6<-lm(LST_mean~(BD*X.canopy)+Imp.+log(Income)+log(river.distance..meters.), data=lst.data)
 summary(lst.model6)
 ```
 
@@ -70,7 +72,7 @@ in the model.
 At this point, I returned to the original model to test for multicolinearity
 
 ```{r fifth model}
-lst.model<-lm(LST_mean~BD+X.canopy+Income+river.distance..meters.+Imp., data=lst.data)
+lst.model<-lm(LST_mean~BD+X.canopy+log(Income)+log(river.distance..meters.)+Imp., data=lst.data)
 summary(lst.model)
 library(car)
 vif(lst.model)
@@ -79,13 +81,12 @@ vif(lst.model)
 Canopy cover and impervious cover seemed a little correlated (the same for BD and impervious cover) so I tested a model that removed impervious cover for that reason.
 
 ```{r sixth model}
-lst.model2<-lm(LST_mean~BD+X.canopy+Income+river.distance..meters., data=lst.data)
+lst.model2<-lm(LST_mean~BD+X.canopy+log(Income)+log(river.distance..meters.), data=lst.data)
 summary(lst.model2)
 vif(lst.model2)
 ```
 
-I then conducted a few model comparisons to see if the model without impervious cover was
-better:
+I then conducted a few model comparisons to see if the model without impervious cover was better:
 
 ```{r model comparisons}
 anova(lst.model,lst.model2)
@@ -104,7 +105,7 @@ library(nlme)
 library(gstat)
 library(sp)
 
-lst.model4<-lm(LST_mean~BD+X.canopy+river.distance..meters.+Imp., data=lst.data)
+lst.model4<-lm(LST_mean~BD+X.canopy+log(river.distance..meters.)+Imp., data=lst.data)
 coordinates(lst.data)<-c('Long','Lat')
 resids<-residuals(lst.model4)
 lst.data$resids=resids
@@ -128,7 +129,7 @@ These plots look pretty good, meaning that the model should be valid.
 Based on this, it seems that LST is being mainly determined by a combination of building density and canopy cover. However, not all areas of low building density necessarily have high canopy cover. Because of this, impervious cover is also an important factor to a slightly lesser extent. Distance to the river is also an important factor due to the temperature regulating properties of large bodies of water. Income is also a strong predictor variable in this model. I would normally assume that this is because of higher canopy cover and more green space in high income areas. But, in the initial data exploration I found relatively little correlation between income and canopy cover and even less correlation between income and proximity to green spaces. It seems that income must be affecting the physical environment more in terms of general greenness and NDVI than the specific ES indicators I selected.
 
 ```{r plot}
-plot(X.canopy~Income, data=lst.data, xlab="Income", ylab="%Canopy Cover")
+plot(X.canopy~log(Income), data=lst.data, xlab="Income", ylab="%Canopy Cover")
 ```
 
 # NO2 Exploration
@@ -295,3 +296,42 @@ no2.gam10<-gam(NO2_mean~s(BD)+s(Income)+s(road.distance..meters.)+
                  s(Lat,Long, k=65), data=no2.data, method="REML")
 gam.check(no2.gam10)
 ```
+
+## 8
+
+The problem with the above model is that it accounts for spatial autocorrelation but doesn't allow me to see the true effects of the other variables in the model. Because of this, I tried applying the Spatial+ approach:
+
+```{r spatial+}
+BD_gam<- gam(BD~s(Lat*Long), data=no2.data)
+resid_BD<-residuals(BD_gam)  
+income_gam<-gam(log(Income)~s(Lat*Long), data=no2.data, na.action=na.exclude)
+resid_income<-residuals(income_gam)
+road_gam<-gam(log(road.distance..meters.)~s(Lat*Long), data=no2.data)
+resid_road<-residuals(road_gam)
+canopy_gam<-gam(X.canopy~s(Lat*Long), data=no2.data)
+resid_canopy<-residuals(canopy_gam)
+
+no2.gam11<-gam(NO2_mean~resid_BD+resid_income+resid_road+resid_canopy+s(Lat,Long), data=no2.data,
+               method="REML")
+summary(no2.gam11)
+gam.check(no2.gam11)
+plot(no2.gam11, scheme=2, page=1)
+concurvity(no2.gam11)
+```
+
+I also tried a version of this model using Borough as a random effect:
+```{r random effect}
+Boroughs<-as.factor(no2.data$Borough)
+
+##tring borough as random effect
+no2.gam12<-gam(NO2_mean~s(BD)+s(Income)+s(road.distance..meters.)+s(X.canopy)+
+                  s(Boroughs, bs="re"), data=no2.data, method="REML", na.action=na.exclude)
+summary(no2.gam12)
+
+##trying both approaches together
+no2.gam13<-gam(NO2_mean~resid_BD+resid_income+resid_road+resid_canopy
+               +s(Lat,Long)+s(Boroughs, bs="re"), data=no2.data,
+               method="REML")
+summary(no2.gam13)
+```
+The model using spatial+ but not using boroughs as a random effect seems to be best (once spatial+ was applied, adding in the random effect did not change the model)

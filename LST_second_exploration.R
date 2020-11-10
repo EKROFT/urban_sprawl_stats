@@ -5,13 +5,13 @@ library(tidyverse)
 
 ##Initial exploration
 data.selected<-lst.data%>%select(LST_mean,BD, X.canopy,
-                                 Income,river.distance..meters.,Imp.)
+                                 Income,river.distance..meters.,Imp., NDVImean)
 GGally::ggpairs(data.selected)
 
 ##Testing linear models
 
 #First attempt model
-lst.model<-lm(LST_mean~BD+X.canopy+Income+river.distance..meters.+Imp., data=lst.data)
+lst.model<-lm(LST_mean~BD+X.canopy+log(Income)+log(river.distance..meters.)+Imp2, data=lst.data)
 summary(lst.model)
 library(car)
 vif(lst.model)
@@ -98,3 +98,41 @@ AIC(lst.model7)
 plot(lst.model7, which=2)
 plot(lst.model7, which=3)
 #not looking perfect, but also not terrible
+
+#trying things out with NDVI
+lst.model8<-lm(LST_mean~Lat*Long+BD+X.canopy+Income+
+                 river.distance..meters.+Imp.+NDVImean, data=lst.data)
+summary(lst.model8)
+lst.model9<-lm(LST_mean~Lat*Long+BD+X.canopy+Income+
+                 river.distance..meters.+NDVImean, data=lst.data)
+summary(lst.model9)
+vif(lst.model8)
+plot(lst.data$NDVImean~lst.data$Imp.)
+vif(lst.model9)
+AIC(lst.model7, lst.model9)
+##lowest AIC is model 9 (replaced imp. with NDVI)
+
+lst.model10<-lm(LST_mean~Lat*Long+BD+Income+
+                  river.distance..meters.+NDVImean, data=lst.data)
+summary(lst.model10)
+AIC(lst.model9,lst.model10)
+##taking away canopy cover hurt the model
+
+lst.model11<-lm(LST_mean~Lat*Long+BD+X.canopy+
+                  river.distance..meters.+NDVImean, data=lst.data)
+summary(lst.model11)
+AIC(lst.model9, lst.model11)
+##taking out income hurt the model
+
+##it seems that adding NDVI into the model doesn't really change anything, 
+#the only variable it can replace is impervious cover and it doesn't change r2 or p
+
+plot(X.canopy~BD, data=lst.data)
+plot(X.canopy~Imp., data=lst.data)
+plot(LST_mean~X.canopy, data=lst.data)
+plot(Imp2~Imp., data=lst.data)
+
+
+#install.packages("qpcR")
+library(qpcR)
+akaike.weights(lst.model11)

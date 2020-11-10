@@ -1,5 +1,6 @@
 no2.data<-read.csv("Data/shortlist_data_0813.csv")
 library(GGally)
+View(no2.data)
 library(tidyverse)
 
 ##Initial exploration
@@ -137,4 +138,38 @@ no2.gam10<-gam(NO2_mean~s(BD)+s(Income)+s(road.distance..meters.)+
                  s(Lat,Long, k=65), data=no2.data, method="REML")
 gam.check(no2.gam10)
 summary(no2.gam10)
-plot(no2.gam10)
+plot(no2.gam10, scheme=2, page=1)
+
+##trying spatial plus approach
+BD_gam<- gam(BD~s(Lat*Long), data=no2.data)
+resid_BD<-residuals(BD_gam)  
+income_gam<-gam(log(Income)~s(Lat*Long), data=no2.data, na.action=na.exclude)
+resid_income<-residuals(income_gam)
+road_gam<-gam(log(road.distance..meters.)~s(Lat*Long), data=no2.data)
+resid_road<-residuals(road_gam)
+canopy_gam<-gam(X.canopy~s(Lat*Long), data=no2.data)
+resid_canopy<-residuals(canopy_gam)
+
+no2.gam11<-gam(NO2_mean~resid_BD+resid_income+resid_road+resid_canopy+s(Lat,Long), data=no2.data,
+               method="REML")
+summary(no2.gam11)
+gam.check(no2.gam11)
+plot(no2.gam11, scheme=2, page=1)
+concurvity(no2.gam11)
+
+Boroughs<-as.factor(no2.data$Borough)
+
+##tring borough as random effect
+no2.gam12<-gam(NO2_mean~s(BD)+s(Income)+s(road.distance..meters.)+s(X.canopy)+
+                  s(Boroughs, bs="re"), data=no2.data, method="REML", na.action=na.exclude)
+summary(no2.gam12)
+
+##trying both approaches together
+no2.gam13<-gam(NO2_mean~resid_BD+resid_income+resid_road+resid_canopy
+               +s(Lat,Long)+s(Boroughs, bs="re"), data=no2.data,
+               method="REML")
+summary(no2.gam13)
+
+##spatial+ model without borough random effect is best
+
+View(no2.data)
