@@ -135,4 +135,20 @@ plot(Imp2~Imp., data=lst.data)
 
 #install.packages("qpcR")
 library(qpcR)
-akaike.weights(lst.model11)
+
+values<-AIC(lst.model, lst.model2)
+
+akaike.weights(values)$weights
+
+##Trying LST for alternate days
+alt_data<-read.csv("Data/Alt_LST.csv")
+View(alt_data)
+alt_may<-lm(May_LSTmean~BD, data=alt_data)
+summary(alt_may)
+plot(May_LSTmean~BD, data=alt_data)
+alt_oct<-lm(Oct_LSTmean~BD, data=alt_data)
+summary(alt_oct)
+plot(Oct_LSTmean~BD, data=alt_data)
+july<-lm(LST_mean~BD, data=lst.data)
+summary(july)
+plot(LST_mean~BD, data=lst.data)

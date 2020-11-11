@@ -101,7 +101,7 @@ abline(gs.lm)
 
 plot9<-ggplot(data, aes(x=BD, y=Man_GS)) +
   geom_point(size=3)+
-  labs(x="% Building Density", y="Road Network Distance to the Nearest Green Space (m)")+
+  labs(x="% Building Density", y="Road Network Distance to the \nNearest Green Space (m)")+
   theme_classic()+
   scale_color_continuous(low="yellow", high="darkgreen")+
   geom_smooth(method=lm, color="black")
@@ -115,3 +115,5 @@ plot10<-ggplot(data, aes(x=BD, y=LST_mean, color=X.canopy)) +
   theme_classic()+
   scale_color_viridis(option="D")
 plot10+my.theme
+
+
