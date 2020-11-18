@@ -29,22 +29,15 @@ library(viridis)
 my.theme<-theme(axis.title = element_text(size=12),
                 legend.title=element_text(size=12),
                 legend.text = element_text(size=10))
-plot1<-ggplot(data, aes(x=BD, y=LST_mean, color=Imp.)) +
-  geom_point(size=3)+
-  labs(x="Building Density (%)", y="Land Surface Temperature (C)",color="Impervious \nCover (%)")+
-  geom_smooth(method=lm, color="black")+
-  theme_classic()+
-  scale_color_continuous(low="gray54", high="red")
-
-plot1+my.theme
 ```
-Building density is an important predictor of LST and so is impervious cover. However, these two variables are not to be confused. The darkest red points represent over 90% impervious cover. Note how these can be observed even at sites of 0% building density. Below is an example of an area with 0 buildings but nearly 100% impervious cover.
+![Impervious cover and LST figure](Photos/Imp_LST.png)
+Building density is an important predictor of LST and so is impervious cover. However, these two variables are not to be confused. Yellow points represent over 90% impervious cover. Note how these can be observed even at sites of 0% building density. Below is an example of an area with 0 buildings but nearly 100% impervious cover. Impervious cover helps explain some of the spread of the points in the building density - LST relationship.
 
-![An example of an area with 0 buildings but close to 100% impervious cover](Site_3.png)
+![An example of an area with 0 buildings but close to 100% impervious cover](Photos/Site_3.png)
 A couple sites had very high building density and impervious cover, yet still maintained relatively low LST. This is because these sites were surrounded by leafy green areas.
-![Site 245 narrow](Site_245_narrow.png)
+![Site 245 narrow](Photos/Site_245_narrow.png)
 This is site 245 (a site with very high building density but low LST). When we zoom out on this image, it is easier to understand why this occurs.
-![Site 245 wide](Site_245_wide.png)
+![Site 245 wide](Photos/Site_245_wide.png)
 
 
 
@@ -56,7 +49,7 @@ plot2<-ggplot(data, aes(x=BD, y=LST_mean, color=Income)) +
   labs(x="Building Density (%)", y="Land Surface Temperature (C)",color="Median \nHousehold \nIncome")+
   geom_smooth(method=lm, color="black")+
   theme_classic()+
-  scale_color_continuous(low="yellow", high="red")+
+  scale_color_viridis(option="A")+
   geom_vline(xintercept=c(50), linetype="dotted")
 plot2+my.theme
 ```
@@ -69,7 +62,7 @@ plot3<-ggplot(data, aes(x=petrochem_distance, y=NO2_mean, color=Income)) +
   labs(x="Distance to Petrochemical Facility", y="NO2 Concentration (mg/m3)",color="Median \nHousehold \nIncome")+
   geom_smooth(method=lm, color="black")+
   theme_classic()+
-  scale_color_gradientn(colours=rainbow(5))+
+  scale_color_viridis(option="B")+
   geom_vline(xintercept=c(10000, 30000), linetype="dotted")
 plot3+my.theme
 ```
@@ -82,14 +75,14 @@ plot6<-ggplot(data, aes(x=Income, y=LST_mean, color=NDVImean)) +
   geom_point(size=3)+
   labs(x="Income", y="Land Surface Temperature (C)",color="NDVI")+
   theme_classic()+
-  scale_color_continuous(low="grey60", high="green")+
+  scale_color_viridis(option="C")+
   geom_smooth(method=lm, color="black")+
   geom_hline(yintercept=c(35), linetype="dotted")
 plot6+my.theme
 ```
 There is a negative relationship between median household income and LST. Much of the spread of the points here can be explained by differences in NDVI. Note how the extreme low temperature points all have very high NDVI while the extreme high points all have very low NDVI. The mid-NDVI sites are clustered near the mid-range of LST.
 
-![Effect of income on physical environment](diagram1.jpg)
+![Effect of income on physical environment](Photos/diagram1.jpg)
 
 ## Plot 5
 
@@ -106,7 +99,22 @@ plot5+my.theme
 
 Differences in canopy cover help explain some of the spread of these points. Notice how the extreme low temperature value is also the only point with >90% canopy cover. Also notice how the 0% canopy cover sites are more concentrated towards the higher end of temperature, while the opposite is true for sites with >20% canopy cover.
 
-![Site 86 (lowest LST value)](Site_86.png)
+![Site 86 (lowest LST value)](Photos/Site_86.png)
 Site 86 (lowest LST value)
-![Site 186 (highest LST value)](Site_186.png)
+![Site 186 (highest LST value)](Photos/Site_186.png)
 Site 186 (highest LST value)
+
+## Plot 6
+
+The distance to the nearest publicly accessible greenspace was measured using multiple metrics that all reached the same conclusion: that greenspaces are evenly distributed among the building densities. Pictured here are the data presented in 3 ways.
+![Greenspace evenly distributed](Photos/GS_Map_Plots.png)
+The far left image measures green space distance as a categorical variable. If the nearest green space was within 5 minutes walking distance aloing the road network, it is marked as 5, if it was within 10 minutes walking distance it was marked as 10, so on and so forth up to a 30 minute walking distance along the road network. The center image is a map depicting the locations of all publicly accessible greenspaces that are larger than 0.5 ha. The far right image measures green space distance as a continuous variable (the euclidean distance in meters from the study site centroid to the entrance of the nearest public green space). You can see in all three figures that the green spaces are uniformly distributed.
+
+## Plot 7
+
+![Canopy cover relating to LST](Photos/Canopy_LST.png)
+Canopy cover helps explain some of the spread of the points in the building density - land surface temperature relationship.
+
+
+
+

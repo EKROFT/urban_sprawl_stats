@@ -19,7 +19,7 @@ GGally::ggpairs(data.selected.NO2)
 
 
 data.selected.GS<-
-  data%>%select(nearest_M,BD, Income)
+  data%>%select(GS.,BD, Income)
 GGally::ggpairs(data.selected.GS)
 
 
