@@ -16,7 +16,7 @@ plot1<-ggplot(data, aes(x=BD, y=LST_mean, color=Imp2)) +
   labs(x="Building Density (%)", y="Land Surface Temperature (C)",color="Impervious \nCover (%)")+
   geom_smooth(method=lm, color="black")+
   theme_classic()+
-  scale_color_viridis(option="D")
+  scale_color_viridis(option="A")
 
 plot1+my.theme
 
@@ -113,7 +113,7 @@ plot10<-ggplot(data, aes(x=BD, y=LST_mean, color=X.canopy)) +
   labs(x="Building Density (%)", y="Land Surface Temperature (C)",color="Canopy \nCover (%)")+
   geom_smooth(method=lm, color="black")+
   theme_classic()+
-  scale_color_viridis(option="D")
+  scale_color_viridis(option="A")
 plot10+my.theme
 
 

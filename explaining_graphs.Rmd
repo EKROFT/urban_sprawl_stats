@@ -29,16 +29,9 @@ library(viridis)
 my.theme<-theme(axis.title = element_text(size=12),
                 legend.title=element_text(size=12),
                 legend.text = element_text(size=10))
-plot1<-ggplot(data, aes(x=BD, y=LST_mean, color=Imp.)) +
-  geom_point(size=3)+
-  labs(x="Building Density (%)", y="Land Surface Temperature (C)",color="Impervious \nCover (%)")+
-  geom_smooth(method=lm, color="black")+
-  theme_classic()+
-  scale_color_viridis(option="D")
-
-plot1+my.theme
 ```
-Building density is an important predictor of LST and so is impervious cover. However, these two variables are not to be confused. Yellow points represent over 90% impervious cover. Note how these can be observed even at sites of 0% building density. Below is an example of an area with 0 buildings but nearly 100% impervious cover.
+![Impervious cover and LST figure](Photos/Imp_LST.png)
+Building density is an important predictor of LST and so is impervious cover. However, these two variables are not to be confused. Yellow points represent over 90% impervious cover. Note how these can be observed even at sites of 0% building density. Below is an example of an area with 0 buildings but nearly 100% impervious cover. Impervious cover helps explain some of the spread of the points in the building density - LST relationship.
 
 ![An example of an area with 0 buildings but close to 100% impervious cover](Photos/Site_3.png)
 A couple sites had very high building density and impervious cover, yet still maintained relatively low LST. This is because these sites were surrounded by leafy green areas.
@@ -116,3 +109,12 @@ Site 186 (highest LST value)
 The distance to the nearest publicly accessible greenspace was measured using multiple metrics that all reached the same conclusion: that greenspaces are evenly distributed among the building densities. Pictured here are the data presented in 3 ways.
 ![Greenspace evenly distributed](Photos/GS_Map_Plots.png)
 The far left image measures green space distance as a categorical variable. If the nearest green space was within 5 minutes walking distance aloing the road network, it is marked as 5, if it was within 10 minutes walking distance it was marked as 10, so on and so forth up to a 30 minute walking distance along the road network. The center image is a map depicting the locations of all publicly accessible greenspaces that are larger than 0.5 ha. The far right image measures green space distance as a continuous variable (the euclidean distance in meters from the study site centroid to the entrance of the nearest public green space). You can see in all three figures that the green spaces are uniformly distributed.
+
+## Plot 7
+
+![Canopy cover relating to LST](Photos/Canopy_LST.png)
+Canopy cover helps explain some of the spread of the points in the building density - land surface temperature relationship.
+
+
+
+
