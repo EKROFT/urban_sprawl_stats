@@ -1,4 +1,4 @@
-no2.data<-read.csv("Data/shortlist_data_0813.csv")
+no2.data<-read.csv("Data/compiled_data_0813.csv")
 library(GGally)
 View(no2.data)
 library(tidyverse)
@@ -157,7 +157,15 @@ gam.check(no2.gam11)
 plot(no2.gam11, scheme=2, page=1)
 concurvity(no2.gam11)
 
+vis.gam(no2.gam10, view=c("Income","road.distance..meters."), 
+        plot.type="persp", theta=1, xlab="Income",
+        ylab="Distance to Major Road", zlab="NO2 Concentration")
+
+
 Boroughs<-as.factor(no2.data$Borough)
+plot(NO2_mean~Income, data=no2.data)
+abline(lm)
+lm<-lm(NO2_mean~log(Income), data=no2.data)
 
 ##tring borough as random effect
 no2.gam12<-gam(NO2_mean~s(BD)+s(Income)+s(road.distance..meters.)+s(X.canopy)+
@@ -173,3 +181,40 @@ summary(no2.gam13)
 ##spatial+ model without borough random effect is best
 
 View(no2.data)
+
+fil<-filter(no2.data, Households>0)
+plot(NO2_mean~Households, data=fil)
+lm1<-lm(NO2_mean~Households, data=fil)
+abline(lm1)
+summary(lm1)
+
+plot(LST_mean~Households, data=fil, ylab="Land Surface Temperature (C)", xlab="Number of Households",
+     pch=16)
+lm2<-lm(LST_mean~Households, data=no2.fil)
+abline(lm2)
+summary(lm2)
+
+##Looking at alternative dates
+no2.alt<-read.csv("Data/NO2_alternativedates.csv")
+
+BD_gam<- gam(BD~s(Lat*Long), data=no2.alt)
+resid_BD<-residuals(BD_gam)  
+income_gam<-gam(log(Income)~s(Lat*Long), data=no2.alt, na.action=na.exclude)
+resid_income<-residuals(income_gam)
+road_gam<-gam(log(road.distance..meters.)~s(Lat*Long), data=no2.alt)
+resid_road<-residuals(road_gam)
+canopy_gam<-gam(X.canopy~s(Lat*Long), data=no2.alt)
+resid_canopy<-residuals(canopy_gam)
+
+no2.gamalt<-gam(MayNO2_mean~resid_BD+resid_income+resid_road+resid_canopy+s(Lat,Long), data=no2.alt,
+               method="REML")
+summary(no2.gamalt)
+summary(no2.gam11)
+
+plot(NO2_mean~BD, data=no2.alt, xlab="% Building Density", ylab="July NO2 Concentration", pch=16)
+ab<-(lm(OctNO2_mean~BD, data=no2.alt))
+summary(ab)
+plot(MayNO2_mean~BD, data=no2.alt,  xlab="% Building Density", ylab="May NO2 Concentration", pch=16)
+plot(OctNO2_mean~BD, data=no2.alt,  xlab="% Building Density", ylab=" October NO2 Concentration", pch=16)
+
+vis.gam(no2.gam11, view=c("resid_road", "resid_income"), plot.type="persp")
