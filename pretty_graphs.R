@@ -131,3 +131,5 @@ plot11<-ggplot(fil, aes(x=Households, y=GS_500)) +
   labs(x="Number of Households", y="Green Space in 500m Buffer (m2)")+
   theme_classic()
 plot11+my.theme
+
+

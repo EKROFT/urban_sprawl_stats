@@ -42,3 +42,11 @@ gs.lm4<-lm(Man_GS~BD+Income, data=fil2)
 plot(Man_GS~BD, data=fil2)
 abline(gs.lm4)
 summary(gs.lm4)
+
+library(mgcv)
+##Trying household relationship as a GAM
+gam.gs<-gam(GS_500~s(Households), data=fil)
+summary(gam.gs)
+plot(gam.gs)
+
+#not statistically significant

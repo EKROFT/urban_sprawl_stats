@@ -218,3 +218,8 @@ plot(MayNO2_mean~BD, data=no2.alt,  xlab="% Building Density", ylab="May NO2 Con
 plot(OctNO2_mean~BD, data=no2.alt,  xlab="% Building Density", ylab=" October NO2 Concentration", pch=16)
 
 vis.gam(no2.gam11, view=c("resid_road", "resid_income"), plot.type="persp")
+
+plot(NO2_mean~Households, data=no2.data)
+lm1<-lm(NO2_mean~Households, data=no2.data)
+abline(lm1)
+summary(lm1)

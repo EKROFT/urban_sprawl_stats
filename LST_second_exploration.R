@@ -1,4 +1,4 @@
-lst.data<-read.csv("Data/shortlist_data_0813.csv")
+lst.data<-read.csv("Data/compiled_data_0813.csv")
 library(GGally)
 library(tidyverse)
 
@@ -158,3 +158,11 @@ summary(july)
 plot(LST_mean~BD, data=lst.data, xlab="% Building Density", ylab="July Land Surface Temperature (C)",
      pch=16)
 abline(july)
+
+#trying household relationship as a GAM
+fil<-filter(lst.data, Households>0)
+gam.lst<-gam(LST_mean~s(Households), data=fil)
+plot(gam.lst)
+summary(gam.lst)
+#just marginally not significant
+
