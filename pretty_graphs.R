@@ -99,6 +99,8 @@ summary(gs.lm)
 plot(Man_GS~BD, data=data)
 abline(gs.lm)
 
+plot(gs.lm)
+
 plot9<-ggplot(data, aes(x=BD, y=Man_GS)) +
   geom_point(size=3)+
   labs(x="% Building Density", y="Road Network Distance to the \nNearest Green Space (m)")+
@@ -113,7 +115,21 @@ plot10<-ggplot(data, aes(x=BD, y=LST_mean, color=X.canopy)) +
   labs(x="Building Density (%)", y="Land Surface Temperature (C)",color="Canopy \nCover (%)")+
   geom_smooth(method=lm, color="black")+
   theme_classic()+
-  scale_color_viridis(option="A")
+  scale_color_gradientn(colours=rainbow(5))
 plot10+my.theme
+
+lm<-lm(Man_GS~log(Income), data=data)
+summary(lm)
+plot(Man_GS~Income, data=data)
+abline(lm)
+
+
+## Plot 11: Housholds vs. Green Space in 500m Buffer
+fil<-filter(data, Households>0)
+plot11<-ggplot(fil, aes(x=Households, y=GS_500)) +
+  geom_point(size=2)+
+  labs(x="Number of Households", y="Green Space in 500m Buffer (m2)")+
+  theme_classic()
+plot11+my.theme
 
 

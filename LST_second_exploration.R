@@ -1,4 +1,4 @@
-lst.data<-read.csv("Data/shortlist_data_0813.csv")
+lst.data<-read.csv("Data/compiled_data_0813.csv")
 library(GGally)
 library(tidyverse)
 
@@ -145,10 +145,28 @@ alt_data<-read.csv("Data/Alt_LST.csv")
 View(alt_data)
 alt_may<-lm(May_LSTmean~BD, data=alt_data)
 summary(alt_may)
-plot(May_LSTmean~BD, data=alt_data)
+plot(May_LSTmean~BD, data=alt_data, xlab="% Building Density", ylab="May Land Surface Temperature (K)",
+     pch=16)
+abline(alt_may)
 alt_oct<-lm(Oct_LSTmean~BD, data=alt_data)
 summary(alt_oct)
-plot(Oct_LSTmean~BD, data=alt_data)
+plot(Oct_LSTmean~BD, data=alt_data, xlab="% Building Density", ylab="October Land Surface Temperature (K)",
+     pch=16)
+abline(alt_oct)
 july<-lm(LST_mean~BD, data=lst.data)
 summary(july)
-plot(LST_mean~BD, data=lst.data)
+plot(LST_mean~BD, data=lst.data, xlab="% Building Density", ylab="July Land Surface Temperature (C)",
+     pch=16)
+abline(july)
+
+#trying household relationship as a GAM
+library(mgcv)
+fil<-filter(lst.data, Households>0)
+gam.lst<-gam(LST_mean~s(Households)+Income+X.canopy+s(Imp.)+
+               s(river.distance..meters.), data=fil, method="REML")
+plot(gam.lst)
+summary(gam.lst)
+#just marginally not significant
+
+gam.lsv<-gam(LST_mean~s(Households), data=fil, method="REML")
+summary(gam.lsv)
