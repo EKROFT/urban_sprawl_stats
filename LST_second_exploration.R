@@ -160,9 +160,13 @@ plot(LST_mean~BD, data=lst.data, xlab="% Building Density", ylab="July Land Surf
 abline(july)
 
 #trying household relationship as a GAM
+library(mgcv)
 fil<-filter(lst.data, Households>0)
-gam.lst<-gam(LST_mean~s(Households), data=fil)
+gam.lst<-gam(LST_mean~s(Households)+Income+X.canopy+s(Imp.)+
+               s(river.distance..meters.), data=fil, method="REML")
 plot(gam.lst)
 summary(gam.lst)
 #just marginally not significant
 
+gam.lsv<-gam(LST_mean~s(Households), data=fil, method="REML")
+summary(gam.lsv)

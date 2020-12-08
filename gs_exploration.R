@@ -7,7 +7,6 @@ library(tidyverse)
 
 #Manhattan's Distance GS vs. BD
 gs.lm<-lm(Man_GS~BD+Income, data=gs.data)
-gs.lm
 summary(gs.lm)
 plot(Man_GS~BD, data=gs.data)
 abline(gs.lm)
@@ -38,15 +37,24 @@ plot(GS_500~Households, data=fil)
 abline(gs.lm3)
 
 fil2<-filter(gs.data, Man_GS<3000)
-gs.lm4<-lm(Man_GS~BD+Income, data=fil2)
-plot(Man_GS~BD, data=fil2)
+gs.lm4<-lm(Man_GS~BD+Income, data=fil)
+plot(Man_GS~BD, data=fil)
 abline(gs.lm4)
 summary(gs.lm4)
 
 library(mgcv)
 ##Trying household relationship as a GAM
-gam.gs<-gam(GS_500~s(Households), data=fil)
+gam.gs<-gam(Man_GS~s(Households)+s(Income), data=fil)
 summary(gam.gs)
 plot(gam.gs)
-
 #not statistically significant
+
+gam.gs2<-gam(Man_GS~s(BD)+s(Income), data=gs.data)
+summary(gam.gs2)
+
+##backyard stuff
+by.model<-lm(BY_Ratio~BD, data=gs.data)
+summary(by.model)
+plot(BY_Ratio~BD, data=gs.data, xlab="Building Density", ylab="Backyard Ratio",
+     pch=16)
+abline(by.model)
