@@ -29,3 +29,5 @@ pretty_graphs.r: The code for graphs I plan on using in my thesis.
 explaining_graphs.RMd/.html: The markdown document explaining my work from pretty_graphs.r
 
 workflow.Rmd/.html: The markdown document explaining my working process over the course of creating statistical models. 
+
+gs_exploration.r: File containing models I worked with for green space access data.
