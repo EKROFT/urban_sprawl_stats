@@ -16,6 +16,8 @@ plot1<-ggplot(data, aes(x=BD, y=LST_mean, color=Imp2)) +
   labs(x="Building Density (%)", y="Land Surface Temperature (C)",color="Impervious \nCover (%)")+
   geom_smooth(method=lm, color="black")+
   theme_classic()+
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))+
   scale_color_viridis(option="A")
 
 plot1+my.theme

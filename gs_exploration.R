@@ -44,9 +44,10 @@ summary(gs.lm4)
 
 library(mgcv)
 ##Trying household relationship as a GAM
-gam.gs<-gam(Man_GS~s(Households)+s(Income), data=fil)
+gam.gs<-gam(Man_GS~s(Households), data=fil, method="REML")
 summary(gam.gs)
 plot(gam.gs)
+gam.check(gam.gs)
 #not statistically significant
 
 gam.gs2<-gam(Man_GS~s(BD)+s(Income), data=gs.data)

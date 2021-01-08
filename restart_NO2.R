@@ -223,3 +223,12 @@ plot(NO2_mean~Households, data=no2.data)
 lm1<-lm(NO2_mean~Households, data=no2.data)
 abline(lm1)
 summary(lm1)
+
+##households as GAM
+House_gam<- gam(Households~s(Lat*Long), data=fil)
+resid_House<-residuals(House_gam)  
+
+no2.gam.house<-gam(NO2_mean~resid_House+s(Lat,Long), data=fil,
+               method="REML")
+summary(no2.gam.house)
+gam.check(no2.gam.house)

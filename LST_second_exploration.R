@@ -170,3 +170,4 @@ summary(gam.lst)
 
 gam.lsv<-gam(LST_mean~s(Households), data=fil, method="REML")
 summary(gam.lsv)
+gam.check(gam.lsv)
