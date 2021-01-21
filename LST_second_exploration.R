@@ -138,7 +138,9 @@ library(qpcR)
 
 values<-AIC(lst.model, lst.model2)
 
-akaike.weights(values)$weights
+akaike.weights(values)
+
+0.377/0.622
 
 ##Trying LST for alternate days
 alt_data<-read.csv("Data/Alt_LST.csv")

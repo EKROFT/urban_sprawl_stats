@@ -134,4 +134,20 @@ plot11<-ggplot(fil, aes(x=Households, y=GS_500)) +
   theme_classic()
 plot11+my.theme
 
-
+## Plot 12: How much does temperature decrease due to canopy?
+fil.tree<-filter(data, BD>50, BD<51)
+plot12<-ggplot(fil.tree, aes(x=X.canopy, y=LST_mean, color=BD))+
+  geom_point(size=2)+
+  labs(x="% Canopy Cover", y="LST (C)", color="BD")+
+  theme_classic()+
+  scale_color_gradientn(colours=rainbow(3)) +
+  geom_smooth(method=lm, color="black")
+  
+plot12+my.theme
+  
+#at 1%, 50% increase led to 10C cooler = 0.2
+#at 10%, 80% increase led to 5C cooler = 0.06
+# at 20%, 10% increase led to 3C cooler = 0.3
+# at 30%, 10% increase led to 3C cooler = 0.3
+# at 40%, 30% increase led to 3C cooler = 0.1
+# AT 50%, 2% increase led to 1C cooler = 0.5

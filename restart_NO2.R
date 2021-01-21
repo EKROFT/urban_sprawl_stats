@@ -228,7 +228,16 @@ summary(lm1)
 House_gam<- gam(Households~s(Lat*Long), data=fil)
 resid_House<-residuals(House_gam)  
 
-no2.gam.house<-gam(NO2_mean~resid_House+s(Lat,Long), data=fil,
+no2.gam.house<-gam(NO2_mean~s(resid_House)+s(Lat,Long), data=fil,
                method="REML")
 summary(no2.gam.house)
 gam.check(no2.gam.house)
+
+##AIC weights
+library(qpcR)
+
+values<-AIC(no2.gam12, no2.gam11)
+values
+akaike.weights(values)
+BIC(no2.gam12, no2.gam11)
+
