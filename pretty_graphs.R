@@ -1,4 +1,4 @@
-data<-read.csv("Data/compiled_data_0813.csv")
+data<-read.csv("Data/compiled_data_0203.csv")
 library(ggplot2)
 library(stringr)
 library(tidyverse)
@@ -16,6 +16,8 @@ plot1<-ggplot(data, aes(x=BD, y=LST_mean, color=Imp2)) +
   labs(x="Building Density (%)", y="Land Surface Temperature (C)",color="Impervious \nCover (%)")+
   geom_smooth(method=lm, color="black")+
   theme_classic()+
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10))+
   scale_color_viridis(option="A")
 
 plot1+my.theme
@@ -58,12 +60,14 @@ plot4+my.theme
 
 #Plot 5: BD vs. LST colour coded for canopy cover
 
-plot5<-ggplot(data, aes(x=BD, y=LST_mean, color=NDVImean)) +
+
+
+plot5<-ggplot(data, aes(x=BD, y=LST_mean, color=X.canopy)) +
   geom_point(size=2)+
-  labs(x="Building Density (%)", y="Land Surface Temperature (C)",color="NDVI")+
+  labs(x="Building Density (%)", y="Land Surface Temperature (C)",color="Canopy \nCover (%)")+
   geom_smooth(method=lm, color="black")+
   theme_classic()+
-  scale_color_viridis(option="D")
+  scale_color_viridis(option="C")
 
 plot5+my.theme
 
@@ -126,10 +130,47 @@ abline(lm)
 
 ## Plot 11: Housholds vs. Green Space in 500m Buffer
 fil<-filter(data, Households>0)
-plot11<-ggplot(fil, aes(x=Households, y=GS_500)) +
+plot11<-ggplot(fil, aes(x=Households, y=GS_300)) +
   geom_point(size=2)+
-  labs(x="Number of Households", y="Green Space in 500m Buffer (m2)")+
+  labs(x="Number of Households", y="300m Buffer")+
   theme_classic()
 plot11+my.theme
 
 
+
+lmx<-lm(LST_mean~BD+X.canopy, data=data)
+summary(lmx)
+
+
+
+##Plot of green space distance and households
+
+fil2<-filter(data, Man_GS<3000, Households>0)
+
+plot13<-ggplot(fil2, aes(x=Households, y=Man_GS))+
+  geom_point(size=2)+
+  labs(x="Number of Households", y="Walking distance to \ngreen space", color="BD")+
+  theme_classic()
+plot13+my.theme
+
+
+##Panel graphs of main 3 indicators:
+plot14<-ggplot(data, aes(x=BD, y=LST_mean))+
+  geom_point(size=3)+
+  labs(x="Building Density (%)", y="LST (C)")+
+  theme_classic()+
+  geom_smooth(method=lm, color="black", se=FALSE)
+plot14+my.theme
+
+plot15<-ggplot(data, aes(x=BD, y=NO2_mean))+
+  geom_point(size=3)+
+  labs(x="Building Density (%)", y="NO2 (mol/m3)")+
+  theme_classic()
+plot15+my.theme
+
+plot16<-ggplot(data, aes(x=BD, y=Man_GS))+
+  geom_point(size=3)+
+  labs(x="Building Density (%)", y="Distance to Public Green Space (m)")+
+  theme_classic()+
+  geom_smooth(method=lm, color="black", se=FALSE)
+plot16+my.theme

@@ -223,3 +223,21 @@ plot(NO2_mean~Households, data=no2.data)
 lm1<-lm(NO2_mean~Households, data=no2.data)
 abline(lm1)
 summary(lm1)
+
+##households as GAM
+House_gam<- gam(Households~s(Lat*Long), data=fil)
+resid_House<-residuals(House_gam)  
+
+no2.gam.house<-gam(NO2_mean~s(resid_House)+s(Lat,Long), data=fil,
+               method="REML")
+summary(no2.gam.house)
+gam.check(no2.gam.house)
+
+##AIC weights
+library(qpcR)
+
+values<-AIC(no2.gam12, no2.gam11)
+values
+akaike.weights(values)
+BIC(no2.gam12, no2.gam11)
+
