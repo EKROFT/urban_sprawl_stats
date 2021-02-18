@@ -163,12 +163,23 @@ abline(july)
 
 #trying household relationship as a GAM
 library(mgcv)
-fil<-filter(lst.data, Households>0)
+fil<-filter(lst.data, Households>0, BD>10, BD<20)
 gam.lst<-gam(LST_mean~s(Households)+Income+X.canopy+s(Imp.)+
                s(river.distance..meters.), data=fil, method="REML")
 plot(gam.lst)
 summary(gam.lst)
-#just marginally not significant
+
+lm.lst<-lm(LST_mean~Households, data=fil)
+summary(lm.lst)
+lm.lst2<-lm(LST_mean~Households+BD+X.canopy+Income+river.distance..meters., data=lst.data)
+summary(lm.lst2)
+library(car)
+vif(lm.lst2)
+lm.lm<-lm(Households~BD, data=lst.data)
+summary(lm.lm)
+
+anova(lst.model, lm.lst2)
+AIC(lst.model, lm.lst2)
 
 gam.lsv<-gam(LST_mean~s(Households), data=fil, method="REML")
 summary(gam.lsv)
