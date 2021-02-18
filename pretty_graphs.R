@@ -1,4 +1,4 @@
-data<-read.csv("Data/compiled_data_0813.csv")
+data<-read.csv("Data/compiled_data_0203.csv")
 library(ggplot2)
 library(stringr)
 library(tidyverse)
@@ -60,12 +60,14 @@ plot4+my.theme
 
 #Plot 5: BD vs. LST colour coded for canopy cover
 
-plot5<-ggplot(data, aes(x=BD, y=LST_mean, color=NDVImean)) +
+
+
+plot5<-ggplot(data, aes(x=BD, y=LST_mean, color=X.canopy)) +
   geom_point(size=2)+
-  labs(x="Building Density (%)", y="Land Surface Temperature (C)",color="NDVI")+
+  labs(x="Building Density (%)", y="Land Surface Temperature (C)",color="Canopy \nCover (%)")+
   geom_smooth(method=lm, color="black")+
   theme_classic()+
-  scale_color_viridis(option="D")
+  scale_color_viridis(option="C")
 
 plot5+my.theme
 
@@ -128,26 +130,47 @@ abline(lm)
 
 ## Plot 11: Housholds vs. Green Space in 500m Buffer
 fil<-filter(data, Households>0)
-plot11<-ggplot(fil, aes(x=Households, y=GS_500)) +
+plot11<-ggplot(fil, aes(x=Households, y=GS_300)) +
   geom_point(size=2)+
-  labs(x="Number of Households", y="Green Space in 500m Buffer (m2)")+
+  labs(x="Number of Households", y="300m Buffer")+
   theme_classic()
 plot11+my.theme
 
-## Plot 12: How much does temperature decrease due to canopy?
-fil.tree<-filter(data, BD>50, BD<51)
-plot12<-ggplot(fil.tree, aes(x=X.canopy, y=LST_mean, color=BD))+
+
+
+lmx<-lm(LST_mean~BD+X.canopy, data=data)
+summary(lmx)
+
+
+
+##Plot of green space distance and households
+
+fil2<-filter(data, Man_GS<3000, Households>0)
+
+plot13<-ggplot(fil2, aes(x=Households, y=Man_GS))+
   geom_point(size=2)+
-  labs(x="% Canopy Cover", y="LST (C)", color="BD")+
+  labs(x="Number of Households", y="Walking distance to \ngreen space", color="BD")+
+  theme_classic()
+plot13+my.theme
+
+
+##Panel graphs of main 3 indicators:
+plot14<-ggplot(data, aes(x=BD, y=LST_mean))+
+  geom_point(size=3)+
+  labs(x="Building Density (%)", y="LST (C)")+
   theme_classic()+
-  scale_color_gradientn(colours=rainbow(3)) +
-  geom_smooth(method=lm, color="black")
-  
-plot12+my.theme
-  
-#at 1%, 50% increase led to 10C cooler = 0.2
-#at 10%, 80% increase led to 5C cooler = 0.06
-# at 20%, 10% increase led to 3C cooler = 0.3
-# at 30%, 10% increase led to 3C cooler = 0.3
-# at 40%, 30% increase led to 3C cooler = 0.1
-# AT 50%, 2% increase led to 1C cooler = 0.5
+  geom_smooth(method=lm, color="black", se=FALSE)
+plot14+my.theme
+
+plot15<-ggplot(data, aes(x=BD, y=NO2_mean))+
+  geom_point(size=3)+
+  labs(x="Building Density (%)", y="NO2 (mol/m3)")+
+  theme_classic()
+plot15+my.theme
+
+plot16<-ggplot(data, aes(x=BD, y=Man_GS))+
+  geom_point(size=3)+
+  labs(x="Building Density (%)", y="Distance to Public Green Space (m)")+
+  theme_classic()+
+  geom_smooth(method=lm, color="black", se=FALSE)
+plot16+my.theme
