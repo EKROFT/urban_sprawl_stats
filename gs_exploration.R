@@ -1,4 +1,4 @@
-gs.data<-read.csv("Data/compiled_data_0813.csv")
+gs.data<-read.csv("Data/compiled_data_0203.csv")
 library(ggplot2)
 library(stringr)
 library(tidyverse)
@@ -33,14 +33,21 @@ plot(gs.lm2)
 #buffer_500 vs. Households
 gs.lm3<-lm(GS_500~Households, data=fil)
 summary(gs.lm3)
+par(mfrow=c(2,2))
+plot(GS_300~Households, data=fil)
 plot(GS_500~Households, data=fil)
-abline(gs.lm3)
+plot(GS_800~Households, data=fil)
+plot(GS_1000~Households, data=fil)
+
 
 fil2<-filter(gs.data, Man_GS<3000)
-gs.lm4<-lm(Man_GS~BD+Income, data=fil)
+gs.lm4<-lm(Man_GS~BD+Income, data=fil, xlab="Households", ylab="Walking distance to green space")
 plot(Man_GS~BD, data=fil)
 abline(gs.lm4)
 summary(gs.lm4)
+
+gs.lm5<-lm(GS_300~Households, data=fil)
+summary(gs.lm5)
 
 library(mgcv)
 ##Trying household relationship as a GAM
@@ -48,8 +55,7 @@ gam.gs<-gam(Man_GS~s(Households), data=fil, method="REML")
 summary(gam.gs)
 plot(gam.gs)
 gam.check(gam.gs)
-#not statistically significant
-
+plot(Man_GS~Households, data=fil, pch=16)
 gam.gs2<-gam(Man_GS~s(BD)+s(Income), data=gs.data)
 summary(gam.gs2)
 
