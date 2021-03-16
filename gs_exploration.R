@@ -4,6 +4,7 @@ library(stringr)
 library(tidyverse)
 library(viridis)
 library(tidyverse)
+library(nlme)
 
 #Manhattan's Distance GS vs. BD
 gs.lm<-lm(Man_GS~BD+Income, data=gs.data)
@@ -39,6 +40,9 @@ plot(GS_500~Households, data=fil)
 plot(GS_800~Households, data=fil)
 plot(GS_1000~Households, data=fil)
 
+gam_500<-gam(GS_500~s(Households)+s(Boroughs, bs="re"), data=fil, method="REML")
+summary(gam_500)
+#not significant
 
 fil2<-filter(gs.data, Man_GS<3000)
 gs.lm4<-lm(Man_GS~BD+Income, data=fil, xlab="Households", ylab="Walking distance to green space")
@@ -51,7 +55,8 @@ summary(gs.lm5)
 
 library(mgcv)
 ##Trying household relationship as a GAM
-gam.gs<-gam(Man_GS~s(Households), data=fil, method="REML")
+Boroughs<-as.factor(fil$Borough)
+gam.gs<-gam(Man_GS~s(Households)+s(Boroughs, bs="re"), data=fil, method="REML")
 summary(gam.gs)
 plot(gam.gs)
 gam.check(gam.gs)
@@ -65,3 +70,33 @@ summary(by.model)
 plot(BY_Ratio~BD, data=gs.data, xlab="Building Density", ylab="Backyard Ratio",
      pch=16)
 abline(by.model)
+
+
+#Manhattan's Distance GS vs. BD
+library(nlme)
+
+model = lme(Man_GS ~ BD, random=~1|Borough,
+            data=gs.data,
+            method="REML")
+
+library(car)
+
+Anova(model)
+
+model.fixed = gls(Man_GS~BD, data=gs.data, method="REML")
+anova(model,model.fixed)
+summary(model)
+summary(model.fixed)
+
+##Training vs. test data
+#install.packages("gghighlight")
+library(gghighlight)
+theme_set(theme_bw())
+
+plot.train<-ggplot(gs.data, aes(x=BD, y=Man_GS, color=Testing)) +
+  labs(x="% Building Density", y="Road Network Distance to the \nNearest Green Space (m)")+
+  geom_point(size=3)+
+  scale_colour_manual(values=c("red", "black"))+
+  geom_smooth(method=lm, color="black")
+plot.train
+

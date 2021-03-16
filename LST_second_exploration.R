@@ -1,4 +1,4 @@
-lst.data<-read.csv("Data/compiled_data_0813.csv")
+lst.data<-read.csv("Data/compiled_data_0203.csv")
 library(GGally)
 library(tidyverse)
 
@@ -145,20 +145,20 @@ akaike.weights(values)
 ##Trying LST for alternate days
 alt_data<-read.csv("Data/Alt_LST.csv")
 View(alt_data)
-alt_may<-lm(May_LSTmean~BD, data=alt_data)
+alt_may<-lm(May_C~BD, data=alt_data)
 summary(alt_may)
-plot(May_LSTmean~BD, data=alt_data, xlab="% Building Density", ylab="May Land Surface Temperature (K)",
-     pch=16)
+plot(May_C~BD, data=alt_data, xlab="% Building Density", ylab="May Land Surface Temperature (C)",
+     pch=16, xlim=c(0,100), ylim=c(10,45))
 abline(alt_may)
-alt_oct<-lm(Oct_LSTmean~BD, data=alt_data)
+alt_oct<-lm(Oct_C~BD, data=alt_data)
 summary(alt_oct)
-plot(Oct_LSTmean~BD, data=alt_data, xlab="% Building Density", ylab="October Land Surface Temperature (K)",
-     pch=16)
+plot(Oct_C~BD, data=alt_data, xlab="% Building Density", ylab="October Land Surface Temperature (C)",
+     pch=16, xlim=c(0,100), ylim=c(10,45))
 abline(alt_oct)
 july<-lm(LST_mean~BD, data=lst.data)
 summary(july)
 plot(LST_mean~BD, data=lst.data, xlab="% Building Density", ylab="July Land Surface Temperature (C)",
-     pch=16)
+     pch=16, xlim=c(0,100), ylim=c(10,45))
 abline(july)
 
 #trying household relationship as a GAM
@@ -181,6 +181,36 @@ summary(lm.lm)
 anova(lst.model, lm.lst2)
 AIC(lst.model, lm.lst2)
 
-gam.lsv<-gam(LST_mean~s(Households), data=fil, method="REML")
+Boroughs<-as.factor(lst.data$Borough)
+gam.lsv<-gam(LST_mean~s(Households)+s(BD)+s(Boroughs, bs="re"), data=lst.data, method="REML")
 summary(gam.lsv)
 gam.check(gam.lsv)
+
+plot(gam.lsv)
+
+#Borouugh as random effect
+library(nlme)
+
+model = lme(LST_mean~BD+X.canopy+log(river.distance..meters.)+Imp., data=lst.data, random=~1|Borough,
+            method="REML")
+
+library(car)
+
+Anova(model)
+
+model.fixed = gls(LST_mean~BD+X.canopy+log(river.distance..meters.)+Imp., data=lst.data, method="REML")
+anova(model,model.fixed)
+summary(model)
+summary(model.fixed)
+
+
+#Test vs. training
+library(gghighlight)
+theme_set(theme_bw())
+
+plot.train<-ggplot(lst.data, aes(x=BD, y=LST_mean, color=Testing)) +
+  labs(x="% Building Density", y="LST (C)")+
+  geom_point(size=3)+
+  scale_colour_manual(values=c("red", "black"))+
+  geom_smooth(method=lm, color="black")
+plot.train
