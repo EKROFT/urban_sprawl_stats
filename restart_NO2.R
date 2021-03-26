@@ -1,4 +1,4 @@
-no2.data<-read.csv("Data/compiled_data_0813.csv")
+no2.data<-read.csv("Data/compiled_data_0203.csv")
 library(GGally)
 View(no2.data)
 library(tidyverse)
@@ -211,11 +211,14 @@ no2.gamalt<-gam(MayNO2_mean~resid_BD+resid_income+resid_road+resid_canopy+s(Lat,
 summary(no2.gamalt)
 summary(no2.gam11)
 
-plot(NO2_mean~BD, data=no2.alt, xlab="% Building Density", ylab="July NO2 Concentration", pch=16)
+plot(NO2_mean~BD, data=no2.alt, xlab="% Building Density", ylab="July NO2 Concentration", pch=16,
+     xlim=c(0,100), ylim=c(0.00002, 0.00008))
 ab<-(lm(OctNO2_mean~BD, data=no2.alt))
 summary(ab)
-plot(MayNO2_mean~BD, data=no2.alt,  xlab="% Building Density", ylab="May NO2 Concentration", pch=16)
-plot(OctNO2_mean~BD, data=no2.alt,  xlab="% Building Density", ylab=" October NO2 Concentration", pch=16)
+plot(MayNO2_mean~BD, data=no2.alt,  xlab="% Building Density", ylab="May NO2 Concentration",
+     pch=16, xlim=c(0,100), ylim=c(0.00002, 0.00008))
+plot(OctNO2_mean~BD, data=no2.alt,  xlab="% Building Density", ylab=" October NO2 Concentration",
+     pch=16, xlim=c(0,100), ylim=c(0.00002, 0.00008))
 
 vis.gam(no2.gam11, view=c("resid_road", "resid_income"), plot.type="persp")
 
@@ -240,4 +243,14 @@ values<-AIC(no2.gam12, no2.gam11)
 values
 akaike.weights(values)
 BIC(no2.gam12, no2.gam11)
+
+#test vs. training data
+library(gghighlight)
+theme_set(theme_bw())
+
+plot.train<-ggplot(no2.data, aes(x=BD, y=NO2_mean, color=Testing)) +
+        labs(x="% Building Density", y="NO2 Concentration (mol/m2)")+
+        geom_point(size=3)+
+        scale_colour_manual(values=c("red", "black"))
+plot.train
 
