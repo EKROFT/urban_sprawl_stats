@@ -6,6 +6,8 @@ library(viridis)
 library(tidyverse)
 library(nlme)
 
+fil<-filter(gs.data, Households>0)
+
 #Manhattan's Distance GS vs. BD
 gs.lm<-lm(Man_GS~BD+Income, data=gs.data)
 summary(gs.lm)
@@ -34,7 +36,7 @@ plot(gs.lm2)
 #buffer_500 vs. Households
 gs.lm3<-lm(GS_500~Households, data=fil)
 summary(gs.lm3)
-par(mfrow=c(2,2))
+par(mfrow=c(1,1))
 plot(GS_300~Households, data=fil)
 plot(GS_500~Households, data=fil)
 plot(GS_800~Households, data=fil)
@@ -88,6 +90,8 @@ model.fixed = gls(Man_GS~BD, data=gs.data, method="REML")
 anova(model,model.fixed)
 summary(model)
 summary(model.fixed)
+
+#using random effect improves model
 
 ##Training vs. test data
 #install.packages("gghighlight")

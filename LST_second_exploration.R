@@ -187,6 +187,7 @@ summary(gam.lsv)
 gam.check(gam.lsv)
 
 plot(gam.lsv)
+#better with random effect
 
 #Borouugh as random effect
 library(nlme)
