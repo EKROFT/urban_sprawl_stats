@@ -162,15 +162,21 @@ plot14<-ggplot(data, aes(x=BD, y=LST_mean))+
   geom_smooth(method=lm, color="black", se=FALSE)
 plot14+my.theme
 
-plot15<-ggplot(data, aes(x=BD, y=NO2_mean))+
+plot15<-ggplot(fil, aes(x=Households, y=NO2_mean))+
   geom_point(size=3)+
-  labs(x="Building Density (%)", y="NO2 (mol/m3)")+
+  labs(x="Households", y="NO2 (mol/m2)")+
   theme_classic()
 plot15+my.theme
 
 plot16<-ggplot(data, aes(x=BD, y=Man_GS))+
   geom_point(size=3)+
   labs(x="Building Density (%)", y="Distance to Public Green Space (m)")+
-  theme_classic()+
-  geom_smooth(method=lm, color="black", se=FALSE)
+  theme_classic()
 plot16+my.theme
+
+plot17<-ggplot(gs.data, aes(y=yard.household, x=BD))+
+  geom_point(size=2)+
+  labs(x="Building Density (%)", y="Private Greenspace per Household (m2)")+
+  theme_classic() +
+  geom_smooth(color="black", se=FALSE)
+plot17+my.theme

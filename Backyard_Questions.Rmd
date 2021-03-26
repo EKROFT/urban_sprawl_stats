@@ -1,0 +1,59 @@
+---
+title: "Green Space Questions"
+author: "Emily Kroft"
+date: "17/03/2021"
+output:
+  html_document:
+    toc: true
+    toc_depth: 6
+    number_sections: false
+    toc_float: true
+    theme: flatly
+    code_download: true
+---
+
+```{r}
+gs.data<-read.csv("Data/compiled_data_0317.csv")
+library(ggplot2)
+library(stringr)
+library(tidyverse)
+library(viridis)
+library(tidyverse)
+library(nlme)
+library(mgcv)
+```
+
+# Building Density vs. Yard Area
+
+This graph plots the total area of a site that yards occupy against building density. I chose these variables to compliment the figure I have of density vs. access to public green space. The results of that figure are more telling on the subject of equity when paired with how density could also influence access to private green space. The chart displayed below only includes residential sites (I also made a version of the access to public green space with only residential sites) and shows a negative relationship in which denser areas have less total area occupied by yards. Dense areas have less access to private green space. This relationship is statistically significant as a linear model at p<0.05.  
+
+```{r}
+fil<-filter(gs.data, Households>0)
+
+plot(yard_area~BD, data=fil, xlab="Building Density (%)",
+     ylab="Total area of yard (m2)", pch=16)
+
+yard_lm<-lm(yard_area~BD, data=fil)
+abline(yard_lm)
+summary(yard_lm)
+
+```
+This result highlights inequity in how green space is distributed throughout Montreal. If denser areas have less private green space, then they should really have more public green space to make up for it. However, this is not occuring because public green space is evenly distributed across the gradient of building density.
+
+
+# WHO Guidelines on GS Access
+
+I made a version of the plot BD vs. Access to GS that only contained residential sites so that I could assess what proprotion of the residential sites measured meet the WHO guidelines stating that everyone should live within a 5 minute walk of the nearest public park.
+
+```{r}
+library(ggplot2)
+library(gghighlight)
+plot7<-ggplot(fil, aes(x=BD, y=Man_GS))+
+  geom_point(size=3, col="red")+
+  labs(x="Building Density (%)", y="Distance to the Nearest \nPublic Green Space (m)")+
+  theme_classic()+
+  gghighlight(Man_GS > 500,
+              unhighlighted_colour = "black")
+plot7
+```
+Out of all sites that contained households, 24% do not meet the WHO guideline that states people should live within a 5 minute walk of the nearest public green space. Red highlighted points on the above graph represent sites that do not meet this WHO guideline. Out of all sites measured (including non-residential), 48% did not meet this WHO guideline. 
