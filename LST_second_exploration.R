@@ -38,7 +38,6 @@ AIC(lst.modelf)
 ##checking model assumptions
 plot(lst.model, which=2)
 plot(lst.model, which=3)
-#diagnostics don't look awesome
 
 ##now testing models with interactions
 
@@ -83,7 +82,7 @@ Moran.I(lst.data$resids, test.dists.inv)
 #Moran's I seems to indicate that there is spatial autocorrelation in the model residuals
 
 #Model assumptions of independent observations not being met, need to account for this
-
+##Ended up accounting for this by having Borough as a random effect in the model.
 coords<-coordinates(lst.data)
 
 lst.model7<-lm(LST_mean~Lat*Long+BD+X.canopy+Income+
@@ -97,7 +96,7 @@ AIC(lst.model7)
 
 plot(lst.model7, which=2)
 plot(lst.model7, which=3)
-#not looking perfect, but also not terrible
+
 
 #trying things out with NDVI
 lst.model8<-lm(LST_mean~Lat*Long+BD+X.canopy+Income+
@@ -163,12 +162,13 @@ abline(july)
 
 #trying household relationship as a GAM
 library(mgcv)
-fil<-filter(lst.data, Households>0, BD>10, BD<20)
+fil<-filter(lst.data, Households>0)
 gam.lst<-gam(LST_mean~s(Households)+Income+X.canopy+s(Imp.)+
                s(river.distance..meters.), data=fil, method="REML")
 plot(gam.lst)
 summary(gam.lst)
 
+##Figuring out whether household is significant beyond BD (most of this I didn't use)
 lm.lst<-lm(LST_mean~Households, data=fil)
 summary(lm.lst)
 lm.lst2<-lm(LST_mean~Households+BD+X.canopy+Income+river.distance..meters., data=lst.data)
@@ -178,8 +178,10 @@ vif(lm.lst2)
 lm.lm<-lm(Households~BD, data=lst.data)
 summary(lm.lm)
 
+
 anova(lst.model, lm.lst2)
 AIC(lst.model, lm.lst2)
+##model I was using first seems to be better
 
 Boroughs<-as.factor(lst.data$Borough)
 gam.lsv<-gam(LST_mean~s(Households)+s(BD)+s(Boroughs, bs="re"), data=lst.data, method="REML")
@@ -189,21 +191,33 @@ gam.check(gam.lsv)
 plot(gam.lsv)
 #better with random effect
 
+values2<-AIC(gam.lsv, lm.lst)
+
+akaike.weights(values2)
+
+
+
 #Borouugh as random effect
 library(nlme)
 
-model = lme(LST_mean~BD+X.canopy+log(river.distance..meters.)+Imp., data=lst.data, random=~1|Borough,
+model = lme(LST_mean~BD+X.canopy+log(river.distance..meters.)+Imp2, data=lst.data, random=~1|Borough,
             method="REML")
 
 library(car)
 
 Anova(model)
 
-model.fixed = gls(LST_mean~BD+X.canopy+log(river.distance..meters.)+Imp., data=lst.data, method="REML")
+model.fixed = gls(LST_mean~BD+X.canopy+log(river.distance..meters.)+Imp2, data=lst.data, method="REML")
 anova(model,model.fixed)
 summary(model)
 summary(model.fixed)
 
+values3<-AIC(model, model.fixed)
+
+akaike.weights(values3)
+
+0.378/0.607
+##model with random effect is better
 
 #Test vs. training
 library(gghighlight)

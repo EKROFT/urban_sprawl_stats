@@ -167,7 +167,7 @@ plot(NO2_mean~Income, data=no2.data)
 abline(lm)
 lm<-lm(NO2_mean~log(Income), data=no2.data)
 
-##tring borough as random effect
+##trying borough as random effect
 no2.gam12<-gam(NO2_mean~s(BD)+s(Income)+s(road.distance..meters.)+s(X.canopy)+
                   s(Boroughs, bs="re"), data=no2.data, method="REML", na.action=na.exclude)
 summary(no2.gam12)
@@ -188,11 +188,6 @@ lm1<-lm(NO2_mean~Households, data=fil)
 abline(lm1)
 summary(lm1)
 
-plot(LST_mean~Households, data=fil, ylab="Land Surface Temperature (C)", xlab="Number of Households",
-     pch=16)
-lm2<-lm(LST_mean~Households, data=no2.fil)
-abline(lm2)
-summary(lm2)
 
 ##Looking at alternative dates
 no2.alt<-read.csv("Data/NO2_alternativedates.csv")

@@ -44,7 +44,7 @@ plot(GS_1000~Households, data=fil)
 
 gam_500<-gam(GS_500~s(Households)+s(Boroughs, bs="re"), data=fil, method="REML")
 summary(gam_500)
-#not significant
+#not significant (tried with each buffer value in turn)
 
 fil2<-filter(gs.data, Man_GS<3000)
 gs.lm4<-lm(Man_GS~BD+Income, data=fil, xlab="Households", ylab="Walking distance to green space")
@@ -56,13 +56,13 @@ gs.lm5<-lm(GS_300~Households, data=fil)
 summary(gs.lm5)
 
 library(mgcv)
+
 ##Trying household relationship as a GAM
 Boroughs<-as.factor(fil$Borough)
 gam.gs<-gam(Man_GS~s(Households)+s(Boroughs, bs="re"), data=fil, method="REML")
 summary(gam.gs)
 gam.check(gam.gs)
 plot(gam.gs)
-gam.check(gam.gs)
 plot(Man_GS~Households, data=fil, pch=16)
 gam.gs2<-gam(Man_GS~s(BD)+s(Income), data=gs.data)
 summary(gam.gs2)
@@ -90,6 +90,11 @@ model.fixed = gls(Man_GS~BD, data=gs.data, method="REML")
 anova(model,model.fixed)
 summary(model)
 summary(model.fixed)
+
+library(qpcR)
+values<-AIC(model, model.fixed)
+akaike.weights(values)
+0.38/0.61
 
 #using random effect improves model
 
