@@ -59,13 +59,20 @@ library(mgcv)
 
 ##Trying household relationship as a GAM
 Boroughs<-as.factor(fil$Borough)
-gam.gs<-gam(Man_GS~s(Households)+s(Boroughs, bs="re"), data=fil, method="REML")
+gam.gs<-gam(Man_GS~s(Households)+s(BD)+s(Boroughs, bs="re"), data=fil, method="REML")
 summary(gam.gs)
 gam.check(gam.gs)
 plot(gam.gs)
 plot(Man_GS~Households, data=fil, pch=16)
-gam.gs2<-gam(Man_GS~s(BD)+s(Income), data=gs.data)
+gam.gs2<-gam(Man_GS~s(Households)+s(BD), data=fil, method="REML")
 summary(gam.gs2)
+
+library(qpcR)
+values2<-AIC(gam.gs, gam.gs2)
+values2
+akaike.weights(values2)
+
+#including random effect is better
 
 ##backyard stuff
 by.model<-lm(BY_Ratio~BD, data=gs.data)
@@ -77,16 +84,14 @@ abline(by.model)
 
 #Manhattan's Distance GS vs. BD
 library(nlme)
-
-model = lme(Man_GS ~ BD, random=~1|Borough,
-            data=gs.data,
-            method="REML")
+Boroughs<-as.factor(gs.data$Borough)
+model<-gam(Man_GS ~ s(BD)+s(Income)+s(Boroughs, bs="re"),
+            data=gs.data, method="REML",na.action=na.exclude)
 
 library(car)
 
-Anova(model)
 
-model.fixed = gls(Man_GS~BD, data=gs.data, method="REML")
+model.fixed<-gam(Man_GS~s(BD)+s(Income), data=gs.data, method="REML", na.action=na.exclude)
 anova(model,model.fixed)
 summary(model)
 summary(model.fixed)
@@ -94,7 +99,7 @@ summary(model.fixed)
 library(qpcR)
 values<-AIC(model, model.fixed)
 akaike.weights(values)
-0.38/0.61
+values
 
 #using random effect improves model
 

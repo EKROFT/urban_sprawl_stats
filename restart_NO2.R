@@ -172,11 +172,20 @@ no2.gam12<-gam(NO2_mean~s(BD)+s(Income)+s(road.distance..meters.)+s(X.canopy)+
                   s(Boroughs, bs="re"), data=no2.data, method="REML", na.action=na.exclude)
 summary(no2.gam12)
 
+
 ##trying both approaches together
 no2.gam13<-gam(NO2_mean~resid_BD+resid_income+resid_road+resid_canopy
                +s(Lat,Long)+s(Boroughs, bs="re"), data=no2.data,
                method="REML")
 summary(no2.gam13)
+
+library(qpcR)
+values1<-AIC(no2.gam11, no2.gam12, no2.gam13)
+akaike.weights(values1)
+
+values1
+
+anova(no2.gam11, no2.gam13)
 
 ##spatial+ model without borough random effect is best
 
@@ -224,20 +233,15 @@ summary(lm1)
 
 ##households as GAM
 House_gam<- gam(Households~s(Lat*Long), data=fil)
-resid_House<-residuals(House_gam)  
+resid_House<-residuals(House_gam)
+BD_gam<- gam(BD~s(Lat*Long), data=fil)
+resid_BD<-residuals(BD_gam)
 
-no2.gam.house<-gam(NO2_mean~s(resid_House)+s(Lat,Long), data=fil,
+no2.gam.house<-gam(NO2_mean~s(resid_House)+s(resid_BD)+s(Lat,Long), data=fil,
                method="REML")
 summary(no2.gam.house)
 gam.check(no2.gam.house)
 
-##AIC weights
-library(qpcR)
-
-values<-AIC(no2.gam12, no2.gam11)
-values
-akaike.weights(values)
-BIC(no2.gam12, no2.gam11)
 
 #test vs. training data
 library(gghighlight)
