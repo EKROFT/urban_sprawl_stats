@@ -250,6 +250,7 @@ theme_set(theme_bw())
 plot.train<-ggplot(no2.data, aes(x=BD, y=NO2_mean, color=Testing)) +
         labs(x="% Building Density", y="NO2 Concentration (mol/m2)")+
         geom_point(size=3)+
+        theme_classic()+
         scale_colour_manual(values=c("red", "black"))
 plot.train
 

@@ -111,8 +111,8 @@ theme_set(theme_bw())
 plot.train<-ggplot(gs.data, aes(x=BD, y=Man_GS, color=Testing)) +
   labs(x="% Building Density", y="Road Network Distance to the \nNearest Green Space (m)")+
   geom_point(size=3)+
-  scale_colour_manual(values=c("red", "black"))+
-  geom_smooth(method=lm, color="black")
+  theme_classic()+
+  scale_colour_manual(values=c("red", "black"))
 plot.train
 
 
@@ -142,7 +142,7 @@ plot7<-ggplot(fil, aes(x=BD, y=Man_GS))+
   geom_point(size=4, col="gold")+
   labs(x="Building Density (%)", y="Distance to the Nearest \nPublic Green Space (m)")+
   theme_classic()+
-  gghighlight(yard.household < 30,
+  gghighlight(BY_Ratio==0,
               unhighlighted_colour = "firebrick")+
   gghighlight(Man_GS > 500, unhighlighted_colour = "black")
 
@@ -160,7 +160,7 @@ summary(lm8)
 
 
 #GAM for households vs. private GS access
-gam.gs3<-gam(yard.household~s(Households)+s(BD), data=fil, method="REML")
+gam.gs3<-gam(yard.household~s(Households)+s(BD)+s(Boroughs, bs="re"), data=fil, method="REML")
 summary(gam.gs3)
 gam.check(gam.gs3)
 #this model was stronger without Borough as random effect.
@@ -171,3 +171,12 @@ plot3<-ggplot(gs.data, aes(x=Households, y=yard.household)) +
   geom_smooth(color="black")+
   theme_classic()
 plot3
+
+#more test vs. training
+plot.train2<-ggplot(gs.data, aes(x=BD, y=yard.household, color=Testing)) +
+  labs(x="% Building Density", y="Private Greenspace per Household (m2)")+
+  geom_point(size=3)+
+  theme_classic()+
+  scale_colour_manual(values=c("red", "black"))+
+  geom_smooth(color="black", se=FALSE)
+plot.train2

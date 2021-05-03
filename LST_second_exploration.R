@@ -1,7 +1,10 @@
-lst.data<-read.csv("Data/compiled_data_0203.csv")
+lst.data<-read.csv("Data/compiled_data_0324.csv")
 library(GGally)
 library(tidyverse)
+library(mgcv)
 
+train.lst<-lst.data%>%filter(Testing=="Training")
+test.lst<-lst.data%>%filter(Testing=="Test")
 
 ##Initial exploration
 data.selected<-lst.data%>%select(LST_mean,BD, X.canopy,
@@ -11,14 +14,18 @@ GGally::ggpairs(data.selected)
 ##Testing linear models
 
 #First attempt model
-lst.model<-lm(LST_mean~BD+X.canopy+log(Income)+log(river.distance..meters.)+Imp2, data=lst.data)
+lst.model<-lme(LST_mean~BD+X.canopy+log(Income)+log(river.distance..meters.)+
+                Imp2, data=lst.data, random=~1|Borough, method="ML", na.action=na.exclude)
+
+
 summary(lst.model)
 library(car)
 vif(lst.model)
 
 #canopy cover and impervious seem a little correlated, same with BD and impervious
 #I'm testing a model that removes impervious cover for that reason
-lst.model2<-lm(LST_mean~BD+X.canopy+Income+river.distance..meters., data=lst.data)
+lst.model2<-lme(LST_mean~BD+X.canopy+log(Income)+
+                 log(river.distance..meters.), data=lst.data,random=~1|Borough, method="ML", na.action=na.exclude)
 summary(lst.model2)
 vif(lst.model2)
 
@@ -29,7 +36,9 @@ anova(lst.model,lst.model2)
 #since the vif showed nothing above 5 for first model, I will keep impervious
 
 #checking if I can remove any variables
-lst.modelf<-lm(LST_mean~BD+X.canopy+river.distance..meters.+Income+Imp., data=lst.data)
+lst.modelf<-lme(LST_mean~BD+X.canopy+log(Income)+log(river.distance..meters.)+Imp2, data=lst.data,
+               random=~1|Borough, method="ML", na.action=na.exclude)
+
 anova(lst.model, lst.modelf)
 AIC(lst.model)
 AIC(lst.modelf)
@@ -41,17 +50,19 @@ plot(lst.model, which=3)
 
 ##now testing models with interactions
 
-lst.model5<-lm(LST_mean~BD+(X.canopy*Imp.)+Income+river.distance..meters., data=lst.data)
+lst.model5<-lme(LST_mean~BD+(X.canopy*Imp.)+Income+river.distance..meters.,
+               data=lst.data, random=~1|Borough, na.action=na.exclude, method="ML")
 summary(lst.model5)
 #canopy:imp. interaction has p values close to 1
 
-lst.model6<-lm(LST_mean~(BD*X.canopy)+Imp.+Income+river.distance..meters., data=lst.data)
+lst.model6<-lme(LST_mean~(BD*X.canopy)+Imp.+Income+river.distance..meters., data=lst.data,
+               random=~1|Borough, na.action=na.exclude, method="ML")
 summary(lst.model6)
 #this BD-canopy cover interaction has a very high p value
 anova(lst.model, lst.model6)
 AIC(lst.model)
 AIC(lst.model6)
-#model without interaction term is stronger in ANOVA, AIC's are the same
+#I shouldn't use the interaction term
 
 
 library(nlme)
@@ -163,7 +174,7 @@ abline(july)
 #trying household relationship as a GAM
 library(mgcv)
 fil<-filter(lst.data, Households>0)
-gam.lst<-gam(LST_mean~s(Households)+Income+X.canopy+s(Imp.)+
+gam.lst<-gam(LST_mean~s(Households)+s(Income)+X.canopy+s(Imp.)+
                s(river.distance..meters.), data=fil, method="REML")
 plot(gam.lst)
 summary(gam.lst)
@@ -184,16 +195,13 @@ AIC(lst.model, lm.lst2)
 ##model I was using first seems to be better
 
 Boroughs<-as.factor(lst.data$Borough)
-gam.lsv<-gam(LST_mean~s(Households)+s(BD)+s(Boroughs, bs="re"), data=lst.data, method="REML")
+gam.lsv<-gam(LST_mean~s(Households)+s(BD)+s(Boroughs, bs="re"), data=lst.data, method="ML")
 summary(gam.lsv)
 gam.check(gam.lsv)
 
 plot(gam.lsv)
 #better with random effect
 
-values2<-AIC(gam.lsv, lm.lst)
-
-akaike.weights(values2)
 
 
 
@@ -201,13 +209,13 @@ akaike.weights(values2)
 library(nlme)
 
 model = lme(LST_mean~BD+X.canopy+log(river.distance..meters.)+Imp2, data=lst.data, random=~1|Borough,
-            method="REML")
+            method="ML")
 
 library(car)
 
 Anova(model)
 
-model.fixed = gls(LST_mean~BD+X.canopy+log(river.distance..meters.)+Imp2, data=lst.data, method="REML")
+model.fixed = gls(LST_mean~BD+X.canopy+log(river.distance..meters.)+Imp2, data=lst.data, method="ML")
 anova(model,model.fixed)
 summary(model)
 summary(model.fixed)
@@ -226,6 +234,7 @@ theme_set(theme_bw())
 plot.train<-ggplot(lst.data, aes(x=BD, y=LST_mean, color=Testing)) +
   labs(x="% Building Density", y="LST (C)")+
   geom_point(size=3)+
+  theme_classic()+
   scale_colour_manual(values=c("red", "black"))+
   geom_smooth(method=lm, color="black")
 plot.train
