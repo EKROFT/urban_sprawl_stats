@@ -182,14 +182,9 @@ summary(no2.gam13)
 library(qpcR)
 values1<-AIC(no2.gam11, no2.gam12, no2.gam13)
 akaike.weights(values1)
-
 values1
 
-anova(no2.gam11, no2.gam13)
-
 ##spatial+ model without borough random effect is best
-
-View(no2.data)
 
 fil<-filter(no2.data, Households>0)
 plot(NO2_mean~Households, data=fil)
