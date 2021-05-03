@@ -1,9 +1,11 @@
-data<-read.csv("Data/compiled_data_0203.csv")
+data<-read.csv("Data/compiled_data_0324.csv")
 library(ggplot2)
 library(stringr)
 library(tidyverse)
+library(svglite)
+library(spocc)
 library(viridis)
-
+fil<-filter(data, Households>0)
 my.theme<-theme(axis.title = element_text(size=12),
                 legend.title=element_text(size=12),
                 legend.text = element_text(size=10))
@@ -59,8 +61,6 @@ plot4<-ggplot(data, aes(x=Income, y=LST_mean)) +
 plot4+my.theme
 
 #Plot 5: BD vs. LST colour coded for canopy cover
-
-
 
 plot5<-ggplot(data, aes(x=BD, y=LST_mean, color=X.canopy)) +
   geom_point(size=2)+
@@ -130,9 +130,9 @@ abline(lm)
 
 ## Plot 11: Housholds vs. Green Space in 500m Buffer
 fil<-filter(data, Households>0)
-plot11<-ggplot(fil, aes(x=Households, y=GS_300)) +
+plot11<-ggplot(fil, aes(x=Households, y=GS_500)) +
   geom_point(size=2)+
-  labs(x="Number of Households", y="300m Buffer")+
+  labs(x="Number of Households", y="500m Buffer")+
   theme_classic()
 plot11+my.theme
 
@@ -155,6 +155,7 @@ plot13+my.theme
 
 
 ##Panel graphs of main 3 indicators:
+svglite("LSTplot.svg") 
 plot14<-ggplot(data, aes(x=BD, y=LST_mean))+
   geom_point(size=3)+
   labs(x="Building Density (%)", y="LST (C)")+
@@ -162,21 +163,76 @@ plot14<-ggplot(data, aes(x=BD, y=LST_mean))+
   geom_smooth(method=lm, color="black", se=FALSE)
 plot14+my.theme
 
+svglite("NO2plot.svg")
 plot15<-ggplot(fil, aes(x=Households, y=NO2_mean))+
   geom_point(size=3)+
   labs(x="Households", y="NO2 (mol/m2)")+
   theme_classic()
 plot15+my.theme
 
+svglite("pgs.svg")
 plot16<-ggplot(data, aes(x=BD, y=Man_GS))+
   geom_point(size=3)+
   labs(x="Building Density (%)", y="Distance to Public Green Space (m)")+
   theme_classic()
 plot16+my.theme
 
+svglite("yardplot.svg")
 plot17<-ggplot(gs.data, aes(y=yard.household, x=BD))+
   geom_point(size=2)+
   labs(x="Building Density (%)", y="Private Greenspace per Household (m2)")+
   theme_classic() +
   geom_smooth(color="black", se=FALSE)
 plot17+my.theme
+
+
+##Plots for Household Panels
+
+plot14<-ggplot(fil, aes(x=Households, y=LST_mean))+
+  geom_point(size=3)+
+  labs(x="Households", y="LST (C)")+
+  theme_classic()
+plot14+my.theme
+
+
+plot15<-ggplot(fil, aes(x=Households, y=NO2_mean))+
+  geom_point(size=3)+
+  labs(x="Households", y="NO2 (mol/m2)")+
+  theme_classic()
+plot15+my.theme
+
+
+plot16<-ggplot(fil, aes(x=Households, y=Man_GS))+
+  geom_point(size=3)+
+  labs(x="Households", y="Distance to Public Green Space (m)")+
+  theme_classic()
+plot16+my.theme
+
+
+plot17<-ggplot(fil, aes(y=yard.household, x=Households))+
+  geom_point(size=2)+
+  labs(x="Households", y="Private Greenspace per Household (m2)")+
+  theme_classic() +
+  geom_smooth(color="black", se=FALSE)
+plot17+my.theme
+
+###Panel plots of buffer area vs. BD
+plot(GS_1000~BD, data=data, pch=16, xlab="Building Density (%)",
+     ylab="1000m Buffer")
+line1<-lm(GS_1000~BD, data=data)
+abline(line1)
+
+plot(GS_800~BD, data=data, pch=16, xlab="Building Density (%)",
+     ylab="800m Buffer")
+line2<-lm(GS_800~BD, data=data)
+abline(line2)
+
+plot(GS_500~BD, data=data, pch=16, xlab="Building Density (%)",
+     ylab="500m Buffer")
+line3<-lm(GS_500~BD, data=data)
+abline(line3)
+
+plot(GS_300~BD, data=data, pch=16, xlab="Building Density (%)",
+     ylab="300m Buffer")
+line4<-lm(GS_500~BD, data=data)
+abline(line4)
