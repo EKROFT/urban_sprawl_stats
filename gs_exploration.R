@@ -180,3 +180,13 @@ plot.train2<-ggplot(gs.data, aes(x=BD, y=yard.household, color=Testing)) +
   scale_colour_manual(values=c("red", "black"))+
   geom_smooth(color="black", se=FALSE)
 plot.train2
+
+
+##access between boroughs
+aov<-aov(yard.household~Borough, data=gs.data)
+summary(aov)
+boxplot(yard.household~Borough, data=gs.data, las=2)
+
+aov2<-aov(Man_GS~Borough, data=gs.data)
+summary(aov2)
+boxplot(Man_GS~Borough, data=gs.data, las=2)

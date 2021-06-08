@@ -6,9 +6,10 @@ library(svglite)
 library(spocc)
 library(viridis)
 fil<-filter(data, Households>0)
-my.theme<-theme(axis.title = element_text(size=12),
+my.theme<-theme(plot.title = element_text(hjust=0.5),
+                axis.title = element_text(size=12),
                 legend.title=element_text(size=12),
-                legend.text = element_text(size=10))
+                legend.text = element_text(size=12))
 
        
 #Plot 1: BD vs. LST colour coded for impervious cover
@@ -130,11 +131,12 @@ abline(lm)
 
 ## Plot 11: Housholds vs. Green Space in 500m Buffer
 fil<-filter(data, Households>0)
-plot11<-ggplot(fil, aes(x=Households, y=GS_500)) +
+plot11<-ggplot(fil, aes(y=GS_300, x=Households))+
   geom_point(size=2)+
-  labs(x="Number of Households", y="500m Buffer")+
-  theme_classic()
-plot11+my.theme
+  labs(title="300m Buffer",x="Number of Households", y="Proportion of buffer \noccupied by public green space (%)")+
+  theme_classic() +
+  theme(plot.title = element_text(hjust=0.5, size=12))
+plot11
 
 
 
@@ -190,49 +192,63 @@ plot17+my.theme
 
 plot14<-ggplot(fil, aes(x=Households, y=LST_mean))+
   geom_point(size=3)+
-  labs(x="Households", y="LST (C)")+
+  labs(x="Number of Households", y="LST (C)")+
   theme_classic()
 plot14+my.theme
 
 
 plot15<-ggplot(fil, aes(x=Households, y=NO2_mean))+
   geom_point(size=3)+
-  labs(x="Households", y="NO2 (mol/m2)")+
+  labs(x="Number of Households", y="NO2 (mol/m2)")+
   theme_classic()
 plot15+my.theme
 
 
 plot16<-ggplot(fil, aes(x=Households, y=Man_GS))+
   geom_point(size=3)+
-  labs(x="Households", y="Distance to Public Green Space (m)")+
+  labs(x="Number of Households", y="Distance to Public Green Space (m)")+
   theme_classic()
 plot16+my.theme
 
 
 plot17<-ggplot(fil, aes(y=yard.household, x=Households))+
   geom_point(size=2)+
-  labs(x="Households", y="Private Greenspace per Household (m2)")+
+  labs(x="Number of Households", y="Area of Private Green Space per Household (m2)")+
   theme_classic() +
   geom_smooth(color="black", se=FALSE)
 plot17+my.theme
 
 ###Panel plots of buffer area vs. BD
-plot(GS_1000~BD, data=data, pch=16, xlab="Building Density (%)",
-     ylab="1000m Buffer")
-line1<-lm(GS_1000~BD, data=data)
-abline(line1)
+plot20<-ggplot(data, aes(y=GS_1000, x=BD))+
+  geom_point(size=2)+
+  labs(title="1000m Buffer",x="Building Density (%)", y="Proportion of buffer \noccupied by public green space (%)")+
+  theme_classic() +
+  theme(plot.title = element_text(hjust=0.5, size=12))+
+  geom_smooth(method="lm",color="black", se=FALSE)
+plot20
 
-plot(GS_800~BD, data=data, pch=16, xlab="Building Density (%)",
-     ylab="800m Buffer")
-line2<-lm(GS_800~BD, data=data)
-abline(line2)
 
-plot(GS_500~BD, data=data, pch=16, xlab="Building Density (%)",
-     ylab="500m Buffer")
-line3<-lm(GS_500~BD, data=data)
-abline(line3)
+plot21<-ggplot(data, aes(y=GS_800, x=BD))+
+  geom_point(size=2)+
+  labs(title="800m Buffer",x="Building Density (%)", y="Proportion of buffer \noccupied by public green space (%)")+
+  theme_classic() +
+  theme(plot.title = element_text(hjust=0.5, size=12))+
+  geom_smooth(method="lm",color="black", se=FALSE)
+plot21
 
-plot(GS_300~BD, data=data, pch=16, xlab="Building Density (%)",
-     ylab="300m Buffer")
-line4<-lm(GS_500~BD, data=data)
-abline(line4)
+plot22<-ggplot(data, aes(y=GS_500, x=BD))+
+  geom_point(size=2)+
+  labs(title="500m Buffer",x="Building Density (%)", y="Proportion of buffer \noccupied by public green space (%)")+
+  theme_classic() +
+  theme(plot.title = element_text(hjust=0.5, size=12))+
+  geom_smooth(method="lm",color="black", se=FALSE)
+plot22
+
+plot23<-ggplot(data, aes(y=GS_300, x=BD))+
+  geom_point(size=2)+
+  labs(title="300m Buffer",x="Building Density (%)", y="Proportion of buffer \noccupied by public green space (%)")+
+  theme_classic() +
+  theme(plot.title = element_text(hjust=0.5, size=12))+
+  geom_smooth(method="lm",color="black", se=FALSE)
+plot23
+
