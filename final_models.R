@@ -14,6 +14,12 @@ lst.model=lme(LST_mean~BD+X.canopy+log(river.distance..meters.)+Imp2+
 summary(lst.model)
 anova(lst.model)
 
+lst.model2=lme(LST_mean~X.canopy+log(river.distance..meters.)+Imp.+
+                log(Income), data=data, random=~1|Borough,
+              method="REML", na.action=na.exclude)
+summary(lst.model2)
+
+
 #Model for Pop. Density effect on LST
 lm.lst<-lm(LST_mean~Households+BD, data=fil)
 summary(lm.lst)
@@ -111,7 +117,6 @@ summary(gs.lm9)
 gs.lm10<-lme(GS_300~BD+Income, data=data, random=~1|Borough, method="REML",
             na.action=na.exclude)
 summary(gs.lm10)
-
 
 
 
